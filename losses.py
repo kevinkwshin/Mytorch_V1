@@ -42,7 +42,9 @@ class MulticlassDiceLoss(nn.Module):
 			if weights is not None:
 				diceLoss *= weights[i]
 			totalLoss += diceLoss
- 
+			
+		return totalLoss
+	
 # def dice_loss(true, logits, eps=1e-7):
 #     """Computes the Sørensen–Dice loss.
 #     Note that PyTorch optimizers minimize a loss. In this
