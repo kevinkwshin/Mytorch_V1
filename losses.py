@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torch.nn import Module
 
 def dice_loss(input, target):
