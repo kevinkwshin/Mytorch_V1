@@ -68,8 +68,8 @@ def intersection_over_union(prediction, groundtruth):
 def accuracy_score(prediction, groundtruth):
     FP, FN, TP, TN = numeric_score(prediction, groundtruth)
     N = FP + FN + TP + TN
-    accuracy = np.divide(TP + TN, N)
-    return accuracy * 100.0
+    TNR = np.divide(TP + TN, N)
+    return TNR * 100.0
 
 def threshold_predictions(predictions, thr=0.5):
     thresholded_preds = predictions[:]
