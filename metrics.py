@@ -97,15 +97,21 @@ def accuracy(prediction, groundtruth):
     accuracy = np.divide(TP + TN, N)
     return accuracy * 100.0
 
+def sensitivity_score(prediction, groundtruth):
+    FP, FN, TP, TN = numeric_score(prediction, groundtruth)
+    N = FN + TP 
+    return np.divide(TP, N) * 100.0
+
 def metric_scores_summary(prediction, groundtruth,threshold=0.5):
     prediction = threshold_predictions(prediction,threshold)
     
     dice = dice_score(prediction, groundtruth)
     precision = precision_score(prediction, groundtruth)
     recall = recall_score(prediction, groundtruth)
+    sensitivity = sensitivity_score(prediction, groundtruth)
     specificity = specificity_score(prediction, groundtruth)
     iou = intersection_over_union(prediction, groundtruth)
     accuracy = accuracy_score(prediction, groundtruth)
 #     hausdorff = hausdorff_score(prediction, groundtruth)
-    print("DSC {:.2f} PRECISION {:.2f} RECALL {:.2f} SPECIFICITY {:.2f} IOU {:.2f} ACCURACY {:.2f}".format(dice,precision,recall,specificity,iou,accuracy))
+    print("DSC {:.2f} PRECISION {:.2f} RECALL {:.2f} SENSITIVITY {:.2f}  SPECIFICITY {:.2f} IOU {:.2f} ACCURACY {:.2f}".format(dice,precision,recall,sensitivity,specificity,iou,accuracy))
     return dice,precision,recall,specificity,iou,accuracy
