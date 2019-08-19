@@ -110,5 +110,5 @@ def metric_scores_summary(prediction, groundtruth,threshold=0.5):
     accuracy = accuracy_score(prediction, groundtruth)
     f1 = f1_score(prediction, groundtruth)
 #     hausdorff = hausdorff_score(prediction, groundtruth)
-    print("DSC {:.2f} PRECISION {:.2f} RECALL {:.2f} SPECIFICITY {:.2f} IOU {:.2f} ACCURACY {:.2f} F1 {:.2f}".format(dice,precision,recall,specificity,iou,accuracy,f1))
+    print("DSC {:.2f} PRECISION {:.2f} RECALL {:.2f} SPECIFICITY {:.2f} IOU {:.2f} ACCURACY {:.2f}".format(dice,precision,recall,specificity,iou,accuracy))
     return dice,precision,recall,specificity,iou,accuracy
