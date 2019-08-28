@@ -23,8 +23,8 @@ def train_model(model, criterion, optimizer, num_epochs=100):
                 preds = model(inputs)
                 loss = criterion(preds, labels)
                 running_loss += loss.item()
-#                 metric = f1_score(preds.cpu().detach().numpy(), labels.cpu().detach().numpy())
-#                 running_metric += metric.item()
+                metric = f1_score(preds.cpu().detach().numpy(), labels.cpu().detach().numpy())
+                running_metric += metric.item()
                 
                 if phase == 'train':
                     optimizer.zero_grad()
@@ -32,19 +32,19 @@ def train_model(model, criterion, optimizer, num_epochs=100):
                     optimizer.step()
 
             epoch_loss = running_loss / len(dataloaders[phase])
-#             epoch_metric = running_metric / len(dataloaders[phase])
+            epoch_metric = running_metric / len(dataloaders[phase])
             
             prefix = ''
             if phase == 'validation':
                 prefix = 'val_'
 
             logs[prefix + 'loss'] = epoch_loss
-#             logs[prefix + 'metric'] = epoch_metric
+            logs[prefix + 'metric'] = epoch_metric
         
         liveloss.update(logs)
         liveloss.draw()
         
 # model = Recurrent(8)
 # criterion = nn.CrossEntropyLoss()
-criterion = dice_loss
-train_model(model, criterion, optimizer, num_epochs=100)
+# criterion = dice_loss
+# train_model(model, criterion, optimizer, num_epochs=100)
