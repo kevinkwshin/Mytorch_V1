@@ -3,6 +3,8 @@ import torch
 from torch.utils import data
 from torch.utils.data import DataLoader
 
+image_depth,image_height,image_width = 160,160,160
+
 class Dataset_3D(DataLoader):
     def __init__(self, x_list, y_list):
         'Initialization'
@@ -39,9 +41,9 @@ class Dataset_3D(DataLoader):
         original_shape = image_header.GetSize()
         orientation = image_header.GetDirection()
         
-        image = image_resize(image_,128,128,128)
+        image = image_resize(image_,image_depth,image_height,image_width)
         image = image_preprocess_float(image)
-        mask = image_resize(mask_,128,128,128,mode='nearest')
+        mask = image_resize(mask_,image_depth,image_height,image_width,mode='nearest')
         
         image = torch.tensor(image)
         mask = torch.tensor(mask)
