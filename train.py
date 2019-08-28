@@ -1,4 +1,8 @@
+import numpy as np
 import torch
+from torch import nn
+from torch import optim
+from torch.utils.data import TensorDataset, DataLoader
 from livelossplot import PlotLosses
 
 def train_model(model, criterion, optimizer, num_epochs=100):
