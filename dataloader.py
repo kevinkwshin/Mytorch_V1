@@ -2,6 +2,7 @@ import SimpleITK as sitk
 import torch
 from torch.utils import data
 from torch.utils.data import DataLoader
+from Keeplearning.image_processing import *
 
 image_depth,image_height,image_width = 160,160,160
 
