@@ -7,7 +7,7 @@ from livelossplot import PlotLosses
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-def train_model(model, criterion, optimizer, num_epochs=100):
+def model_train(model, criterion, optimizer, num_epochs=100):
     liveloss = PlotLosses()
     model = model.to(device)
     
