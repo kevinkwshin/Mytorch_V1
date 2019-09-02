@@ -1,5 +1,5 @@
 
-def model_eval(model,)
+def model_eval():
   for idx, batch in tqdm_notebook(enumerate(valid_loader)):
       image = batch['inputs'].to(device=device, dtype=torch.float)
       mask  = batch['labels'].to(device=device, dtype=torch.float)
