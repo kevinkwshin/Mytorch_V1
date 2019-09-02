@@ -41,9 +41,9 @@ class Dataset_3D(DataLoader):
         original_shape = image_header.GetSize()
         orientation = image_header.GetDirection()
         
-        image = image_resize(image_,image_depth,image_height,image_width)
+        image = image_resize_3D(image_,image_depth,image_height,image_width)
         image = image_preprocess_float(image)
-        mask = image_resize(mask_,image_depth,image_height,image_width,mode='nearest')
+        mask = image_resize_3D(mask_,image_depth,image_height,image_width,mode='nearest')
         
         image = torch.tensor(image)
         mask = torch.tensor(mask)
