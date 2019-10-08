@@ -760,3 +760,27 @@ class HistogramClipping(MTTransform):
         array[array <= percentile1] = percentile1
         array[array >= percentile2] = percentile2
         return array
+    
+    
+class Resize2D(MTTransform):
+    def __init__(self, image_width, image_height): # 3D image
+#         self.data = data
+        self.image_width = image_width
+        self.image_height = image_height
+        
+    def __call__(self, sample):
+        rdict = {}
+        image_width = self.image_width
+        image_height = self.image_height
+        
+        input_data = sample['input']
+        gt = sample['gt']
+
+        input_data = input_data.resize((image_width,image_height), Image.BICUBIC)#,Image.ANTIALIAS)
+        gt = gt.resize((image_width,image_height),Image.NEAREST)#,Image.ANTIALIAS)
+        
+        rdict['input'] = input_data
+        rdict['gt'] = gt
+        
+        sample.update(rdict)
+        return sample
