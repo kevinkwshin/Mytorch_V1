@@ -254,7 +254,8 @@ class NormalizeInstance3D(MTTransform):
             }
             sample.update(rdict)
         return sample
-
+    
+    
 class Windowing_CT(MTTransform):
     """Windowing CT.
     :param wl: windowing level.
@@ -268,18 +269,22 @@ class Windowing_CT(MTTransform):
     def __call__(self, sample):
         input_data = sample['input']
         
+        uint_wl = self.wl + 1024 
+        uint_ww = self.ww
+        
         input_data[input_data < -1024] = -1024.
         input_data[input_data >= 3071] = 3071.
+        
         input_data += 1024.
         
         maxp = torch.max(input_data)
         minp = torch.min(input_data)
         
-        a = self.wl - (self.ww/2)
-        b = self.wl + (self.ww/2)
-        slope = (maxp - minp)/self.ww
+        a = uint_wl - (uint_ww/2)
+        b = uint_wl + (uint_ww/2)
+        slope = (maxp - minp)/uint_ww
         intercept = maxp - (slope*b)
-
+        
         input_data[input_data < a] = minp
         input_data[input_data > b] = maxp
         input_data = torch.where((input_data >= a) & (input_data <= b),torch.round(slope*input_data + intercept), input_data)
