@@ -9,6 +9,7 @@ import collections
 from tqdm import tqdm
 import numpy as np
 import nibabel as nib
+import SimpleITK as sitk
 
 from torch.utils.data import Dataset
 import torch
@@ -74,13 +75,16 @@ class SegmentationPair2D(object):
         self.canonical = canonical
         self.cache = cache
 
-        self.input_handle = nib.load(self.input_filename)
+#         self.input_handle = nib.load(self.input_filename)
+        self.input_handle = sitk.ReadImage(self.input_filename)
+        
 
         # Unlabeled data (inference time)
         if self.gt_filename is None:
             self.gt_handle = None
         else:
-            self.gt_handle = nib.load(self.gt_filename)
+#             self.gt_handle = nib.load(self.gt_filename)        
+            self.gt_handle = sitk.ReadImage(self.gt_filename)
 
         if len(self.input_handle.shape) > 3:
             raise RuntimeError("4-dimensional volumes not supported.")
