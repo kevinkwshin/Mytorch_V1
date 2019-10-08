@@ -1,3 +1,5 @@
+# from https://github.com/perone/medicaltorch/blob/master/medicaltorch/transform.py
+
 import skimage
 import numpy as np
 import numbers
