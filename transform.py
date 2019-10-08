@@ -268,6 +268,10 @@ class Windowing_CT(MTTransform):
     def __call__(self, sample):
         input_data = sample['input']
         
+        input_data[input_data < -1024] = -1024.
+        input_data[input_data >= 3071] = 3071.
+        input_data += 1024.
+        
         maxp = torch.max(input_data)
         minp = torch.min(input_data)
         
