@@ -89,7 +89,7 @@ class SegmentationPair2D(object):
             raise RuntimeError("4-dimensional volumes not supported.")
 
         # Sanity check for dimensions, should be the same
-        input_shape, gt_shape = self.get_pair_shapes()
+#         input_shape, gt_shape = self.get_pair_shapes()
 
         if self.gt_handle is not None:
             if not np.allclose(input_shape, gt_shape):
