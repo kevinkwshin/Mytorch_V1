@@ -76,15 +76,15 @@ class SegmentationPair2D(object):
         self.cache = cache
 
 #         self.input_handle = nib.load(self.input_filename)
-        self.input_handle = sitk.ReadImage(self.input_filename)
-        
+        self.input_handle = sitk.GetArrayFromImage(sitk.ReadImage(self.input_filename)).astype('float32')
 
         # Unlabeled data (inference time)
         if self.gt_filename is None:
             self.gt_handle = None
         else:
-#             self.gt_handle = nib.load(self.gt_filename)        
-            self.gt_handle = sitk.ReadImage(self.gt_filename)
+#             self.gt_handle = nib.load(self.gt_filename)     
+
+            self.gt_handle  = sitk.GetArrayFromImage(sitk.ReadImage(self.gt_filename)).astype('float32')
         print(self.gt_handle)
 
         if len(self.input_handle.shape) > 3:
