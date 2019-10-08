@@ -3,6 +3,7 @@
 import skimage
 import numpy as np
 import numbers
+import torch
 import torchvision.transforms.functional as F
 from torchvision import transforms
 from PIL import Image
