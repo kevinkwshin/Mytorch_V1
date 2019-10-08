@@ -291,15 +291,14 @@ class MRI2DSegmentationDataset(Dataset):
         # Consistency with torchvision, returning PIL Image
         # Using the "Float mode" of PIL, the only mode
         # supporting unbounded float32 values
-#         input_img = Image.fromarray(pair_slice["input"], mode='F')
-#         print(type(pair_slice))
+        input_img = Image.fromarray(pair_slice["input"], mode='F')
         input_img = np.array(pair_slice["input"])
 
         # Handle unlabeled data
         if pair_slice["gt"] is None:
             gt_img = None
         else:
-#             gt_img = Image.fromarray(pair_slice["gt"], mode='F')
+            gt_img = Image.fromarray(pair_slice["gt"], mode='F')
             gt_img = np.array(pair_slice["gt"])
 
         data_dict = {
