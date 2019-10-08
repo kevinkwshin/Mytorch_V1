@@ -77,7 +77,8 @@ class SegmentationPair2D(object):
 
 #         self.input_handle = nib.load(self.input_filename)
         self.input_handle = sitk.GetArrayFromImage(sitk.ReadImage(self.input_filename)).astype('float32')
-
+        print(self.input_handle.shape)
+        
         # Unlabeled data (inference time)
         if self.gt_filename is None:
             self.gt_handle = None
