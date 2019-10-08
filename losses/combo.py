@@ -2,11 +2,11 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-# from bce import StableBCELoss
-# from dice import DiceLoss
-# from focal import FocalLoss2d
-# from jaccard import JaccardLoss
-# from lovasz import LovaszLoss, LovaszLossSigmoid
+from .bce import StableBCELoss
+from .dice import DiceLoss
+from .focal import FocalLoss2d
+from .jaccard import JaccardLoss
+from .lovasz import LovaszLoss, LovaszLossSigmoid
 
 EPSILON = 1e-6
 
