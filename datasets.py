@@ -91,16 +91,16 @@ class SegmentationPair2D(object):
         # Sanity check for dimensions, should be the same
 #         input_shape, gt_shape = self.get_pair_shapes()
 
-        if self.gt_handle is not None:
-            if not np.allclose(input_shape, gt_shape):
-                raise RuntimeError('Input and ground truth with different dimensions.')
+#         if self.gt_handle is not None:
+#             if not np.allclose(input_shape, gt_shape):
+#                 raise RuntimeError('Input and ground truth with different dimensions.')
 
-        if self.canonical:
-            self.input_handle = nib.as_closest_canonical(self.input_handle)
+#         if self.canonical:
+#             self.input_handle = nib.as_closest_canonical(self.input_handle)
 
-            # Unlabeled data
-            if self.gt_handle is not None:
-                self.gt_handle = nib.as_closest_canonical(self.gt_handle)
+#             # Unlabeled data
+#             if self.gt_handle is not None:
+#                 self.gt_handle = nib.as_closest_canonical(self.gt_handle)
 
     def get_pair_shapes(self):
         """Return the tuple (input, ground truth) representing both the input
