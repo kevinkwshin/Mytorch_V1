@@ -85,6 +85,7 @@ class SegmentationPair2D(object):
         else:
 #             self.gt_handle = nib.load(self.gt_filename)        
             self.gt_handle = sitk.ReadImage(self.gt_filename)
+        print(self.gt_handle)
 
         if len(self.input_handle.shape) > 3:
             raise RuntimeError("4-dimensional volumes not supported.")
