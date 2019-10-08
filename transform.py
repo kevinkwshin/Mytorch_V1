@@ -255,6 +255,41 @@ class NormalizeInstance3D(MTTransform):
             sample.update(rdict)
         return sample
 
+    
+class Normalize2(MTTransform):
+    """Normalize a tensor volume with mean and standard deviation estimated
+    from the sample itself.
+    :param mean: mean value.
+    :param std: standard deviation value.
+    """
+    def __call__(self, sample):
+        input_data = sample['input']
+
+#         mean, std = input_data.mean(), input_data.std()
+        maxp = np.max(input_data)
+        minp = np.min(input_data)
+
+        a = wl - (ww/2)
+        b = wl + (ww/2)
+        slope = (maxp - minp)/ww
+        intercept = maxp - (slope*b)
+
+        input_data[input_data < a] = minp
+        input_data[input_data > b] = maxp
+        input_data = np.where((input_data >= a) & (input_data <= b),np.round(slope*input_data + intercept), input_data)
+        
+
+        if mean != 0 or std != 0:
+            input_data_normalized = F.normalize(input_data,
+                                    [mean for _ in range(0,input_data.shape[0])],
+                                    [std for _ in range(0,input_data.shape[0])])
+
+            rdict = {
+                'input': input_data_windowing,
+            }
+            sample.update(rdict)
+        return sample
+    
 class RandomRotation(MTTransform):
     def __init__(self, degrees, resample=False,
                  expand=False, center=None,
