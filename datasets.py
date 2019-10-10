@@ -1,4 +1,5 @@
 import nibabel as nib
+import numpy as np
 import collections
 from torch._six import string_classes, int_classes
 
