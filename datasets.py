@@ -1,6 +1,7 @@
 import nibabel as nib
 import numpy as np
 import collections
+import torch
 from torch._six import string_classes, int_classes
 
 class SegmentationPair2D(object):
