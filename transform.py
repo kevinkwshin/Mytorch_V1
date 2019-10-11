@@ -234,6 +234,30 @@ class NormalizeInstance(MTTransform):
         sample.update(rdict)
         return sample
 
+class Normalize0to1(MTTransform):
+    """Normalize a tensor image with mean and standard deviation estimated
+    from the sample itself.
+    """
+    
+    def __init__(self, x_max, x_min):
+        self.x_max = x_max
+        self.x_min = x_min
+
+    def __call__(self, sample):
+        x = sample['input']
+        
+        x_max = percentile(x, 98)
+        x_min = percentile(x, 2)
+
+        x = (x - x_min) / (x_max - x_min)
+        x = torch.clamp(x,0, 1)
+        
+        rdict = {
+            'input': x,
+        }
+        sample.update(rdict)
+        return sample
+    
 class NormalizeInstance3D(MTTransform):
     """Normalize a tensor volume with mean and standard deviation estimated
     from the sample itself.
