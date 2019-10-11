@@ -302,8 +302,8 @@ class Windowing_CT(MTTransform):
         
         input_data += 1024.
         
-        maxp = torch.max(input_data)
-        minp = torch.min(input_data)
+        maxp = np.max(input_data)
+        minp = np.min(input_data)
         
         a = uint_wl - (uint_ww/2)
         b = uint_wl + (uint_ww/2)
@@ -312,7 +312,7 @@ class Windowing_CT(MTTransform):
         
         input_data[input_data < a] = minp
         input_data[input_data > b] = maxp
-        input_data = torch.where((input_data >= a) & (input_data <= b),torch.round(slope*input_data + intercept), input_data)
+        input_data = np.where((input_data >= a) & (input_data <= b),np.round(slope*input_data + intercept), input_data)
         
         rdict = {
             'input': input_data,
