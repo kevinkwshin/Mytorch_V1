@@ -44,7 +44,6 @@ class ComboLoss(nn.Module):
         for k, v in weights.items():
             if not v:
                 continue
-            print(k,v)
             val = 0
             if k in self.per_channel:
                 channels = targets.size(1)
@@ -57,7 +56,7 @@ class ComboLoss(nn.Module):
 
             else:
                 val = self.mapping[k](sigmoid_input if k in self.expect_sigmoid else outputs, targets)
-
+            print(val)
             self.values[k] = val
             loss += self.weights[k] * val
         return loss.clamp(min=1e-5)
