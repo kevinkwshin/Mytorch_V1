@@ -40,7 +40,8 @@ class ComboLoss(nn.Module):
     def forward(self, outputs, targets):
         loss = 0
         weights = self.weights
-        sigmoid_input = torch.sigmoid(outputs)
+#         sigmoid_input = torch.sigmoid(outputs)
+        sigmoid_input = outputs
         for k, v in weights.items():
             if not v:
                 continue
