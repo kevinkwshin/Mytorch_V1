@@ -15,7 +15,7 @@ class ComboLoss(nn.Module):
     def __init__(self, weights, per_image=False, channel_weights=None, channel_losses=None):
         super().__init__()
         if channel_weights is None:
-            channel_weights = [1, 0.5, 0.5]
+            channel_weights = [1, 1, 1]
         self.weights = weights
         self.bce = StableBCELoss()
         self.dice = DiceLoss(per_image=False)
@@ -44,6 +44,7 @@ class ComboLoss(nn.Module):
         for k, v in weights.items():
             if not v:
                 continue
+            print(k,v)
             val = 0
             if k in self.per_channel:
                 channels = targets.size(1)
@@ -63,7 +64,7 @@ class ComboLoss(nn.Module):
 
 
 class ComboSuperVisionLoss(ComboLoss):
-    def __init__(self, weights, per_image=False, channel_weights=(1, 0.5, 0.5), channel_losses=None, sv_weight=0.15):
+    def __init__(self, weights, per_image=False, channel_weights=(1, 1, 1), channel_losses=None, sv_weight=0.15):
         super().__init__(weights, per_image, channel_weights, channel_losses)
         self.sv_weight = sv_weight
 
