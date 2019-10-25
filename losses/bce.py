@@ -13,4 +13,5 @@ class StableBCELoss(nn.Module):
         target = target.float().view(-1)
         neg_abs = -input.abs()
         loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
+        print(loss.mean())
         return loss.mean()
