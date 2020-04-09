@@ -13,10 +13,7 @@ def train_seg(model, criterion, optimizer, num_epochs=100):
     for epoch in range(num_epochs):
         logs = {}
         for phase in ['train', 'validation']:
-            if phase == 'train':
-                model.train()
-            else:
-                model.eval()
+            model.train() if phase == 'train' else model.eval()
 
             running_loss = 0.0
             running_metric = 0.0
