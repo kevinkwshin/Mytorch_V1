@@ -27,6 +27,7 @@ warnings.filterwarnings('ignore')
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+print()
 print('torch.__version__ :', torch.__version__)
 print('torch.cuda.is_available() :', torch.cuda.is_available())
 print('torch.cuda.device_count() :', torch.cuda.device_count())
