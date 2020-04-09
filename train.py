@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 from torch import nn, optim
-# from torch import optim
 from torch.utils.data import TensorDataset, DataLoader
 from livelossplot import PlotLosses
 
