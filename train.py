@@ -25,6 +25,7 @@ def train_seg(model, criterion, optimizer, num_epochs=100):
                 preds = model(inputs)
                 loss = criterion(preds, labels)
                 running_loss += loss.item()
+                
                 metric = score_f1(preds.cpu().detach().numpy(), labels.cpu().detach().numpy())
                 running_metric += metric.item()
                 
