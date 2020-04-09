@@ -7,7 +7,7 @@ from livelossplot import PlotLosses
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-def model_train(model, criterion, optimizer, num_epochs=100):
+def train_seg(model, criterion, optimizer, num_epochs=100):
     liveloss = PlotLosses()
     model = model.to(device)
     
@@ -53,4 +53,4 @@ def model_train(model, criterion, optimizer, num_epochs=100):
 # model = Recurrent(8)
 # criterion = nn.CrossEntropyLoss()
 # criterion = dice_loss
-# train_model(model, criterion, optimizer, num_epochs=100)
+# train_segl(model, criterion, optimizer, num_epochs=100)
