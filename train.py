@@ -6,6 +6,14 @@ from livelossplot import PlotLosses
 
 # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
+if torch.cuda.device_count()>1:
+    model = torch.nn.DataParallel(model)
+    parallel_mode = True
+    print('multi_GPU!!!!')
+else:
+    parallel_mode = False
+    print('single_GPU')
+    
 def train_seg(model, criterion, optimizer, num_epochs=100):
     liveloss = PlotLosses()
     model = model.to(device)
