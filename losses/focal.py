@@ -1,6 +1,8 @@
 import torch
-from torch import nn
-
+import torch.nn as nn
+from torch.nn import Module
+import torch.nn.functional as F
+import numpy as np
 EPSILON = 1e-6
 
 class FocalLoss2d(nn.Module):
