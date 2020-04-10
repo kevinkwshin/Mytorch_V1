@@ -19,6 +19,7 @@ def dice_loss(input, target):
 
     dice = (2.0 * intersection + eps) / (union + eps)
     return - dice
+
 class MulticlassDiceLoss(nn.Module):
 	"""
 	requires one hot encoded target. Applies DiceLoss on each class iteratively.
