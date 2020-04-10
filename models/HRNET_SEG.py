@@ -481,7 +481,6 @@ def get_seg_model(**kwargs):
     with open(r'config_w18.yaml') as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
-    print(cfg)
     
     model = HighResolutionNet(cfg, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
