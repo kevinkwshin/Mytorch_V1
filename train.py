@@ -13,11 +13,36 @@ def multi_gpu():
     else:
         parallel_mode = False
         print('single_GPU')
+
+def train_loop(model, loss_fn, optimizer, num_epochs=10):
+    
+    model = model.to(device)
+    multi_gpu()
+    valid_loss = []
+    
+    for epoch in range(num_epochs):     
+        
+        scheduler.step()
+        lr = scheduler.get_lr()[0]
+        
+        # train and valid loss
+        data_train = train_valid(phase='train')
+        data_valid = train_valid(phase='valid')
+        
+        # weight save
+        valid_loss.append(data_valid[0])
+        if np.array(valid_loss).min() == valid_loss[-1]:
+            print('saving weight:',comment+'best.pt')
+            if parallel_mode== False:
+                torch.save({'state_dict': model.state_dict()}, comment+'best.pt')
+            else:
+                torch.save({'state_dict': model.module.state_dict()}, comment+'best.pt')
+        print('epoch', epoch, 'lr', lr, data_valid[-1])
     
 def train_seg(model, criterion, optimizer, num_epochs=100):
     liveloss = PlotLosses()
-    model = model.to(device)
-    multi_gpu()
+#     model = model.to(device)
+#     multi_gpu()
     
     for epoch in range(num_epochs):
         logs = {}
