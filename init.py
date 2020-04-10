@@ -20,7 +20,7 @@ import torch.nn.functional as F
 import torchvision.utils as vutils
 from torchvision import transforms
 
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 
 import warnings
 warnings.filterwarnings('ignore')
