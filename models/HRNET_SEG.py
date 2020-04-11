@@ -478,7 +478,7 @@ from MUNCH import *
 import yaml
 
 def get_seg_model(**kwargs):
-    with open(r'config_w18.yaml') as file:
+    with open(r'config_w48.yaml') as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
