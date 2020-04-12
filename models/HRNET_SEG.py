@@ -451,7 +451,9 @@ class HighResolutionNet(nn.Module):
 #         x_cls = self.classifier(x)
         x = self.last_layer(x)
         
-        return nn.Sigmoid()(x)#, nn.Sigmoid()(x_cls) 
+#         return nn.Sigmoid()(x)#, nn.Sigmoid()(x_cls) 
+        return nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
+
 
     def init_weights(self, pretrained='',):
         logger.info('=> init weights from normal distribution')
