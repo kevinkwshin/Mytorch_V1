@@ -452,7 +452,7 @@ class HighResolutionNet(nn.Module):
         x = self.last_layer(x)
         
 #         return nn.Sigmoid()(x)#, nn.Sigmoid()(x_cls) 
-        return nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
+        return x #nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
 
 
     def init_weights(self, pretrained='',):
