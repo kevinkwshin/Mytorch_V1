@@ -317,7 +317,7 @@ class HighResolutionNet(nn.Module):
                 padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0)
         )
         self.output_size = config.TRAIN.IMAGE_SIZE
-        
+        self.activation = nn.Sigmoid()
 #         self.classifier = nn.Sequential(
 #                                         nn.Conv2d(270,1,1),
 #                                         nn.AdaptiveMaxPool2d((1,1)),
@@ -450,8 +450,8 @@ class HighResolutionNet(nn.Module):
         x = torch.cat([x[0], x1, x2, x3], 1)
 #         x_cls = self.classifier(x)
         x = self.last_layer(x)
+        x = self.activation(x)
         
-#         return nn.Sigmoid()(x)#, nn.Sigmoid()(x_cls) 
         return x #nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
 
 
