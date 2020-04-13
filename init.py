@@ -7,8 +7,6 @@ import cv2
 import SimpleITK as sitk
 import nibabel as nib
 
-import matplotlib.pyplot as plt
-
 import torch
 from torch.utils import data
 from torch.utils.data import Dataset, DataLoader
@@ -20,7 +18,9 @@ import torch.nn.functional as F
 import torchvision.utils as vutils
 from torchvision import transforms
 
+import matplotlib.pyplot as plt
 from tqdm import tqdm
+from tensorboardX import SummaryWriter
 
 import warnings
 warnings.filterwarnings('ignore')
