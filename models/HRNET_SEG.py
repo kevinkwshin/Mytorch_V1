@@ -318,7 +318,7 @@ class HighResolutionNet(nn.Module):
         )
         self.output_size = config.TRAIN.IMAGE_SIZE
 #         self.activation = nn.Softmax(dim=1)
-        self.activation = nn.Sigmoid()
+#         self.activation = nn.Sigmoid()
 #         self.classifier = nn.Sequential(
 #                                         nn.Conv2d(270,1,1),
 #                                         nn.AdaptiveMaxPool2d((1,1)),
@@ -449,11 +449,11 @@ class HighResolutionNet(nn.Module):
         x3 = F.upsample(x[3], size=(x0_h, x0_w), mode='bilinear')
     
         x = torch.cat([x[0], x1, x2, x3], 1)
-#         x_cls = self.classifier(x)
+        x_cls = self.classifier(x)
         x = self.last_layer(x)
-        x = self.activation(x)
+#         x = self.activation(x)
         
-        return x #nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
+        return x,x_cls #nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
 
 
     def init_weights(self, pretrained='',):
