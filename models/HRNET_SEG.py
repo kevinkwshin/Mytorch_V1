@@ -485,13 +485,13 @@ class HighResolutionNet(nn.Module):
 from MUNCH import *
 import yaml
 
-def get_seg_model(**kwargs):
+def get_seg_model(activation,**kwargs):
     
     with open(r'config_w18.yaml') as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
-    model = HighResolutionNet(cfg, **kwargs)
+    model = HighResolutionNet(cfg, activation, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
 
     return model
