@@ -487,7 +487,7 @@ import yaml
 
 def get_seg_model(activation,**kwargs):
     
-    with open(r'config_w48.yaml') as file:
+    with open(r'config_w18.yaml') as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
