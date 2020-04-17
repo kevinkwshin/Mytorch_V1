@@ -573,6 +573,7 @@ class HighResolutionNet(nn.Module):
         return nn.Sequential(*modules), num_inchannels
 
     def forward(self, x):
+        x_shape = x.shape[2:]
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -612,6 +613,7 @@ class HighResolutionNet(nn.Module):
         x = self.stage4(x_list)
 
         # Upsampling
+        x[0] = F.upsample(x[0],size=(x_shape), mode='bilinear')        
         x0_h, x0_w = x[0].size(2), x[0].size(3)
         x1 = F.interpolate(x[1], size=(x0_h, x0_w),
                         mode='bilinear', align_corners=ALIGN_CORNERS)
@@ -668,8 +670,17 @@ class HighResolutionNet(nn.Module):
             raise RuntimeError('No such file {}'.format(pretrained))
 
 
-def get_seg_model(cfg, **kwargs):
+from MUNCH import *
+import yaml
+
+def get_seg_model(**kwargs):
+    
+    with open(r'config_OCR.yaml') as file:
+        cfg = yaml.load(file, Loader=yaml.FullLoader)
+    cfg = munchify(cfg)
+    
     model = HighResolutionNet(cfg, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
 
     return model
+
