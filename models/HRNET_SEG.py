@@ -250,7 +250,7 @@ blocks_dict = {
 
 class HighResolutionNet(nn.Module):
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config, activation,**kwargs):
         extra = config.MODEL.EXTRA
         super(HighResolutionNet, self).__init__()
 
@@ -317,8 +317,13 @@ class HighResolutionNet(nn.Module):
                 padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0)
         )
         self.output_size = config.TRAIN.IMAGE_SIZE
+        if activation == 'sigmoid':
+            self.activation = nn.Sigmoid()
+        elif activation == 'softmax':
+            self.activation = nn.Softmax(dim=1)
+#           
 #         self.activation = nn.Softmax(dim=1)
-        self.activation = nn.Sigmoid()
+#         self.activation = nn.Sigmoid()
 #         self.classifier = nn.Sequential(
 #                                         nn.Conv2d(270,1,1),
 #                                         nn.AdaptiveMaxPool2d((1,1)),
