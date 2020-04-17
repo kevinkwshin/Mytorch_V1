@@ -317,8 +317,8 @@ class HighResolutionNet(nn.Module):
                 padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0)
         )
         self.output_size = config.TRAIN.IMAGE_SIZE
-        self.activation = nn.Softmax(dim=1)
-#         self.activation = nn.Sigmoid()
+#         self.activation = nn.Softmax(dim=1)
+        self.activation = nn.Sigmoid()
 #         self.classifier = nn.Sequential(
 #                                         nn.Conv2d(270,1,1),
 #                                         nn.AdaptiveMaxPool2d((1,1)),
