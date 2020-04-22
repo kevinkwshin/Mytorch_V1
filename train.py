@@ -139,7 +139,32 @@ class ValidEpoch(Epoch):
             prediction = self.model.forward(x)
             loss = self.loss(prediction, y)
         return loss, prediction       
-        
+
+class TestEpoch(Epoch):
+    def __init__(self, model, loss, metrics, device='cpu', verbose=True):
+        super().__init__(
+            model=model,
+            loss=loss,
+            metrics=metrics,
+            stage_name='test',
+            device=device,
+            verbose=verbose,
+        )
+
+    def on_epoch_start(self):
+        self.model.eval()
+
+    def batch_update(self, x, y,z):
+        with torch.no_grad():
+            prediction = self.model.forward(x)
+            loss = self.loss(prediction, y)
+            prediction = torch.round(prediction)
+            # do what you want
+#             prediction = label_TPFPFN(prediction,y)  # 2nd label
+#             np.save('Output/'+z[0].split('/')[-1],prediction.cpu().detach().numpy()[0]) 
+            
+        return loss, prediction
+
         
         
         
