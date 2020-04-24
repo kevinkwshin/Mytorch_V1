@@ -20,7 +20,7 @@ from torchvision import transforms
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 import warnings
 warnings.filterwarnings('ignore')
