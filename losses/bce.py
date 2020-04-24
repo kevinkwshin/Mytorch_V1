@@ -3,7 +3,6 @@ from torch import nn
 
 EPSILON = 1e-6
 
-
 class StableBCELoss(nn.Module):
     def __init__(self):
         super(StableBCELoss, self).__init__()
