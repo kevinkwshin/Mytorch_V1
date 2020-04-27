@@ -1,3 +1,11 @@
+
+pip install torch torchvision keras
+pip install SimpleITK nibabel nipype pyradiomics pydicom
+pip install opencv-python scikit-image jupyter sklearn librosa albumentations git+https://github.com/qubvel/segmentation_models
+pip install natsort h5py tqdm pandas nltk numpy xlrd cython
+pip install Autopep8 seaborn livelossplot jupyterlab tensorboardX
+pip install fastai 
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 print('kevinkwshin')
