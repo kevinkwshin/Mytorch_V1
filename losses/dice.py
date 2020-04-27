@@ -3,7 +3,6 @@ from torch import nn
 
 EPSILON = 1e-6
 
-
 def soft_dice_loss(outputs, targets, per_image=False):
     batch_size = outputs.size()[0]
     eps = 1e-5
@@ -16,7 +15,6 @@ def soft_dice_loss(outputs, targets, per_image=False):
     loss = (1 - (2 * intersection + eps) / union).mean()
 
     return loss
-
 
 class DiceLoss(nn.Module):
     def __init__(self, weight=None, size_average=True, per_image=False):
