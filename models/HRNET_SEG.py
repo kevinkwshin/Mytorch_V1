@@ -325,7 +325,7 @@ class HighResolutionNet(nn.Module):
         if auxilary==True:
             self.classifier = nn.Sequential(
                                         nn.Conv2d(270,1,1),
-                                        nn.AdaptiveMaxPool2d((1,1)),
+                                        nn.AdaptiveAvgPool2d((1,1)),
                                         nn.Flatten(),
                                         nn.Sigmoid()
                                         )
