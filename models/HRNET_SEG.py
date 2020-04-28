@@ -454,7 +454,7 @@ class HighResolutionNet(nn.Module):
         x3 = F.upsample(x[3], size=(x0_h, x0_w), mode='bilinear')
     
         x = torch.cat([x[0], x1, x2, x3], 1)    
-        if auxilary==True:
+        if self.auxilary==True:
             x_cls = self.classifier(x)
         x = self.last_layer(x)
         x = self.activation(x)
