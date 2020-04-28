@@ -250,7 +250,7 @@ blocks_dict = {
 
 class HighResolutionNet(nn.Module):
 
-    def __init__(self, config, activation,**kwargs):
+    def __init__(self, config, activation,auxilary,**kwargs):
         extra = config.MODEL.EXTRA
         super(HighResolutionNet, self).__init__()
 
@@ -321,14 +321,13 @@ class HighResolutionNet(nn.Module):
             self.activation = nn.Sigmoid()
         elif activation == 'softmax':
             self.activation = nn.Softmax(dim=1)
-#           
-#         self.activation = nn.Softmax(dim=1)
-#         self.activation = nn.Sigmoid()
-#         self.classifier = nn.Sequential(
-#                                         nn.Conv2d(270,1,1),
-#                                         nn.AdaptiveMaxPool2d((1,1)),
-#                                         nn.Flatten(),
-#                                         )
+        if auxilary==True:
+            self.classifier = nn.Sequential(
+                                        nn.Conv2d(270,1,1),
+                                        nn.AdaptiveMaxPool2d((1,1)),
+                                        nn.Flatten(),
+                                        nn.Sigmoid()
+                                        )
 
     def _make_transition_layer(
             self, num_channels_pre_layer, num_channels_cur_layer):
@@ -453,13 +452,16 @@ class HighResolutionNet(nn.Module):
         x2 = F.upsample(x[2], size=(x0_h, x0_w), mode='bilinear')
         x3 = F.upsample(x[3], size=(x0_h, x0_w), mode='bilinear')
     
-        x = torch.cat([x[0], x1, x2, x3], 1)
-#         x_cls = self.classifier(x)
+        x = torch.cat([x[0], x1, x2, x3], 1)    
+        if auxilary==True:
+            x_cls = self.classifier(x)
         x = self.last_layer(x)
         x = self.activation(x)
         
-        return x #nn.Softmax()(x)#, nn.Sigmoid()(x_cls) 
-
+        if auxilary==False:
+            return x
+        elif auxilary==True:
+            return x, x_cls        
 
     def init_weights(self, pretrained='',):
         logger.info('=> init weights from normal distribution')
@@ -485,7 +487,7 @@ class HighResolutionNet(nn.Module):
 from MUNCH import *
 import yaml
 
-def get_seg_model(pretrained,activation,**kwargs):
+def get_seg_model(pretrained,activation,auxilary,**kwargs):
     
     if pretrained=='18':
         with open(r'config_w18.yaml') as file:
@@ -495,7 +497,7 @@ def get_seg_model(pretrained,activation,**kwargs):
             cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
-    model = HighResolutionNet(cfg, activation, **kwargs)
+    model = HighResolutionNet(cfg, activation, auxilary, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
 
     return model
