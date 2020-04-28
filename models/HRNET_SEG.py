@@ -321,6 +321,7 @@ class HighResolutionNet(nn.Module):
             self.activation = nn.Sigmoid()
         elif activation == 'softmax':
             self.activation = nn.Softmax(dim=1)
+        self.auxilary = auxilary
         if auxilary==True:
             self.classifier = nn.Sequential(
                                         nn.Conv2d(270,1,1),
@@ -458,9 +459,9 @@ class HighResolutionNet(nn.Module):
         x = self.last_layer(x)
         x = self.activation(x)
         
-        if auxilary==False:
+        if self.auxilary==False:
             return x
-        elif auxilary==True:
+        elif self.auxilary==True:
             return x, x_cls        
 
     def init_weights(self, pretrained='',):
