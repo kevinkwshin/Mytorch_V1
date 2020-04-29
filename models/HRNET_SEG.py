@@ -324,7 +324,7 @@ class HighResolutionNet(nn.Module):
         self.auxilary = auxilary
         if auxilary==True:
             self.classifier = nn.Sequential(
-                                        nn.Conv2d(270,1,1),
+                                        nn.Conv2d(1,1,1),
                                         nn.AdaptiveAvgPool2d((1,1)),
                                         nn.Flatten(),
                                         nn.Sigmoid()
@@ -454,10 +454,13 @@ class HighResolutionNet(nn.Module):
         x3 = F.upsample(x[3], size=(x0_h, x0_w), mode='bilinear')
     
         x = torch.cat([x[0], x1, x2, x3], 1)    
-        if self.auxilary==True:
-            x_cls = self.classifier(x)
+#         if self.auxilary==True:
+#             x_cls = self.classifier(x)
         x = self.last_layer(x)
         x = self.activation(x)
+        
+        if self.auxilary==True:
+            x_cls = self.classifier(x)
         
         if self.auxilary==False:
             return x
