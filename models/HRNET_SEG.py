@@ -312,7 +312,7 @@ class HighResolutionNet(nn.Module):
             nn.Conv2d(
                 in_channels=last_inp_channels,
 #                 out_channels=config.DATASET.NUM_CLASSES,
-                out_channels=output_c,
+                out_channels=output_ch,
                 kernel_size=extra.FINAL_CONV_KERNEL,
                 stride=1,
                 padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0)
