@@ -250,7 +250,7 @@ blocks_dict = {
 
 class HighResolutionNet(nn.Module):
 
-    def __init__(self, config, activation, auxilary, input_c, output_c, **kwargs):
+    def __init__(self, config, activation, auxilary, input_ch, output_ch, **kwargs):
         extra = config.MODEL.EXTRA
         super(HighResolutionNet, self).__init__()
         
@@ -492,7 +492,7 @@ class HighResolutionNet(nn.Module):
 from MUNCH import *
 import yaml
 
-def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_c=3, output_c=1,**kwargs):
+def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_ch=3, output_ch=1,**kwargs):
     """
     pretrained '18' or '48
     """
@@ -504,7 +504,7 @@ def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_c=
             cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
-    model = HighResolutionNet(cfg, activation, auxilary, input_c, output_c, **kwargs)
+    model = HighResolutionNet(cfg, activation, auxilary, input_ch, output_ch, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
 
     return model
