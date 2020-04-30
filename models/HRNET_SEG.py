@@ -504,7 +504,7 @@ def get_seg_model(pretrained='18',activation='sigmoid',auxilary=False,input_c=3,
             cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
-    model = HighResolutionNet(cfg, activation, auxilary, **kwargs)
+    model = HighResolutionNet(cfg, activation, auxilary,input_c,output_c, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
 
     return model
