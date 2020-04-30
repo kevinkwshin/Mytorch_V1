@@ -250,12 +250,12 @@ blocks_dict = {
 
 class HighResolutionNet(nn.Module):
 
-    def __init__(self, config, activation,auxilary,**kwargs):
+    def __init__(self, config, activation,auxilary,input_c,output_c,**kwargs):
         extra = config.MODEL.EXTRA
         super(HighResolutionNet, self).__init__()
-
+        
         # stem net
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1,bias=False)
+        self.conv1 = nn.Conv2d(input_c, 64, kernel_size=3, stride=2, padding=1,bias=False)
         self.bn1 = BatchNorm2d(64, momentum=BN_MOMENTUM)
         self.conv2 = nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1, bias=False)
         self.bn2 = BatchNorm2d(64, momentum=BN_MOMENTUM)
@@ -311,7 +311,8 @@ class HighResolutionNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(
                 in_channels=last_inp_channels,
-                out_channels=config.DATASET.NUM_CLASSES,
+#                 out_channels=config.DATASET.NUM_CLASSES,
+                out_channels=output_c,
                 kernel_size=extra.FINAL_CONV_KERNEL,
                 stride=1,
                 padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0)
@@ -491,8 +492,10 @@ class HighResolutionNet(nn.Module):
 from MUNCH import *
 import yaml
 
-def get_seg_model(pretrained,activation,auxilary,**kwargs):
-    
+def get_seg_model(pretrained='18',activation='sigmoid',auxilary=False,input_c=3,output_c=1,**kwargs):
+    """
+    pretrained '18' or '48
+    """
     if pretrained=='18':
         with open(r'config_w18.yaml') as file:
             cfg = yaml.load(file, Loader=yaml.FullLoader)
