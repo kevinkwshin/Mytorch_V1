@@ -487,14 +487,14 @@ class HighResolutionNet(nn.Module):
             #    logger.info(
             #        '=> loading {} pretrained model {}'.format(k, pretrained))
             model_dict.update(pretrained_dict)
-            self.load_state_dict(model_dict)
+            self.load_state_dict(model_dict,strict=False)
 
 from MUNCH import *
 import yaml
 
-def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_ch=3, output_ch=1,**kwargs):
+def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_ch=3, output_ch=1, **kwargs):
     """
-    pretrained '18' or '48
+    pretrained '18' or '48'
     """
     if pretrained=='18':
         with open(r'config_w18.yaml') as file:
