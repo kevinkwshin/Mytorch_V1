@@ -58,7 +58,7 @@ class DiceLoss(base.Loss):
 #             ignore_channels=self.ignore_channels,
 #         )
 
-EPSILON = 1e-6
+# EPSILON = 1e-6
 
 class StableBCELoss(base.Loss):
     def __init__(self,**kwargs):
