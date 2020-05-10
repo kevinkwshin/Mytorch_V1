@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 from . import base
@@ -56,6 +57,19 @@ class DiceLoss(base.Loss):
 #             threshold=None,
 #             ignore_channels=self.ignore_channels,
 #         )
+
+EPSILON = 1e-6
+
+class StableBCELoss(base.Loss):
+    def __init__(self):
+        super(StableBCELoss, self).__init__()
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor):
+        input = input.float().view(-1)
+        target = target.float().view(-1)
+        neg_abs = -input.abs()
+        loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
+        return loss.mean()
     
 class BinaryFocalLoss(base.Loss):
     def __init__(self, alpha=[0.75, 0.25], gamma=4.0, activation=None, ignore_channels=None, **kwargs):
