@@ -61,11 +61,9 @@ class DiceLoss(base.Loss):
 # EPSILON = 1e-6
 
 class StableBCELoss(base.Loss):
-#     def __init__(self,**kwargs):
-#         super().__init__(**kwargs)
-
-    def __init__(self):
-        super(StableBCELoss, self).__init__()
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+#         super(StableBCELoss, self).__init__()
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         input = input.float().view(-1)
