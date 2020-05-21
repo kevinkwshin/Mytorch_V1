@@ -101,7 +101,6 @@ class UNet3D(nn.Module):
 
         return x
 
-
 class ResidualUNet3D(nn.Module):
     """
     Residual 3DUnet model implementation based on https://arxiv.org/pdf/1706.00120.pdf.
@@ -127,10 +126,10 @@ class ResidualUNet3D(nn.Module):
         num_groups (int): number of groups for the GroupNorm
     """
 
-    def __init__(self, in_channels, out_channels, final_sigmoid, f_maps=32, conv_layer_order='cge', num_groups=8,
+    def __init__(self, in_channels, out_channels, final_sigmoid, f_maps=32, conv_layer_order='cge', num_groups=8, auxiliary=False,
                  **kwargs):
         super(ResidualUNet3D, self).__init__()
-
+        
         if isinstance(f_maps, int):
             # use 5 levels in the encoder path as suggested in the paper
             f_maps = create_feature_maps(f_maps, number_of_fmaps=5)
@@ -168,7 +167,16 @@ class ResidualUNet3D(nn.Module):
             self.final_activation = nn.Sigmoid()
         else:
             self.final_activation = nn.Softmax(dim=1)
-
+        
+        self.auxiliary = auxiliary
+        self.auxiliary_cls = nn.Sequential(
+                                        nn.AdaptiveAvgPool3d(1),
+                                        nn.Flatten(),
+                                        nn.Dropout(p=0.5, inplace=True),
+                                        nn.Linear(256, out_channels, bias=True),
+                                        nn.Sigmoid())
+        
+        
     def forward(self, x):
         # encoder part
         encoders_features = []
@@ -180,6 +188,7 @@ class ResidualUNet3D(nn.Module):
         # remove the last encoder's output from the list
         # !!remember: it's the 1st in the list
         encoders_features = encoders_features[1:]
+        
 
         # decoder part
         for decoder, encoder_features in zip(self.decoders, encoders_features):
@@ -193,8 +202,13 @@ class ResidualUNet3D(nn.Module):
         # logits and it's up to the user to normalize it before visualising with tensorboard or computing validation metric
 #         if not self.training:
         x = self.final_activation(x)
-
-        return x
+    
+        if not self.auxiliary:
+            return x
+        else:
+            print(encoders_features[0].shape)
+            auxiliary = self.auxiliary_cls(encoders_features[0]) 
+            return x, auxiliary
 
 
 class Noise2NoiseUNet3D(nn.Module):
