@@ -206,7 +206,6 @@ class ResidualUNet3D(nn.Module):
         if not self.auxiliary:
             return x
         else:
-            print(encoders_features[0].shape)
             auxiliary = self.auxiliary_cls(encoders_features[0]) 
             return x, auxiliary
 
