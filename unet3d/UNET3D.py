@@ -170,7 +170,7 @@ class ResidualUNet3D(nn.Module):
         
         self.auxiliary = auxiliary
         self.auxiliary_cls = nn.Sequential(
-                                        nn.AdaptiveAvgPool3d(1),
+                                        nn.AdaptiveMaxPool3d(1),
                                         nn.Flatten(),
                                         nn.Dropout(p=0.5, inplace=True),
                                         nn.Linear(256, out_channels, bias=True),
