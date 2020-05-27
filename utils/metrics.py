@@ -149,7 +149,7 @@ class DICE(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        dice = 2*TP/(2*TP + FP + FN + self.eps)        
+        dice = 2*TP/(2*TP + FP + FN + self.eps)
         return dice
     
 class IOU(base.Metric):
@@ -212,5 +212,8 @@ class AUC(base.Metric):
         
         y_gt = y_gt.cpu().detach().numpy()
         y_pr = y_pr.cpu().detach().numpy()
-        score = roc_auc_score(y_gt,y_pr)
-        return torch.tensor(score)
+        try:
+            score = roc_auc_score(y_gt,y_pr)
+            return torch.tensor(score)
+        except:
+            return torch.tensor(0)

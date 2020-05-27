@@ -1,4 +1,4 @@
-import torch
+import torch 
 import torch.nn as nn
 
 from . import base
@@ -41,39 +41,8 @@ class DiceLoss(base.Loss):
             ignore_channels=self.ignore_channels,
         )
 
-# class BinaryFocalLoss(base.Loss):
-#     def __init__(self, alpha=0.75, gamma=4.0, activation=None, ignore_channels=None, **kwargs):
-#         super().__init__(**kwargs)
-#         self.alpha = alpha
-#         self.gamma = gamma
-#         self.activation = Activation(activation)
-#         self.ignore_channels = ignore_channels
-#     def forward(self, y_pr, y_gt):
-#         y_pr = self.activation(y_pr)
-#         return F.binary_focal_loss(
-#             y_pr, y_gt,
-#             gamma=self.gamma,
-#             alpha=self.alpha,
-#             threshold=None,
-#             ignore_channels=self.ignore_channels,
-#         )
-
-# EPSILON = 1e-6
-
-class StableBCELoss(base.Loss):
-    def __init__(self,**kwargs):
-        super().__init__(**kwargs)
-#         super(StableBCELoss, self).__init__()
-
-    def forward(self, input: torch.Tensor, target: torch.Tensor):
-        input = input.float().view(-1)
-        target = target.float().view(-1)
-        neg_abs = -input.abs()
-        loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
-        return loss.mean()
-    
 class BinaryFocalLoss(base.Loss):
-    def __init__(self, alpha=[0.75, 0.25], gamma=4.0, activation=None, ignore_channels=None, **kwargs):
+    def __init__(self, alpha=0.75, gamma=4.0, activation=None, ignore_channels=None, **kwargs):
         super().__init__(**kwargs)
         self.alpha = alpha
         self.gamma = gamma
@@ -88,6 +57,37 @@ class BinaryFocalLoss(base.Loss):
             threshold=None,
             ignore_channels=self.ignore_channels,
         )
+
+# class BinaryFocalLoss(base.Loss):
+#     def __init__(self, alpha=[0.75, 0.25], gamma=4.0, activation=None, ignore_channels=None, **kwargs):
+#         super().__init__(**kwargs)
+#         self.alpha = alpha
+#         self.gamma = gamma
+#         self.activation = Activation(activation)
+#         self.ignore_channels = ignore_channels
+#     def forward(self, y_pr, y_gt):
+#         y_pr = self.activation(y_pr)
+#         return F.binary_focal_loss(
+#             y_pr, y_gt,
+#             gamma=self.gamma,
+#             alpha=self.alpha,
+#             threshold=None,
+#             ignore_channels=self.ignore_channels,
+#         )
+    
+class StableBCELoss(base.Loss):
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        
+#     def __init__(self):
+#         super(StableBCELoss, self).__init__()
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor):
+        input = input.float().view(-1)
+        target = target.float().view(-1)
+        neg_abs = -input.abs()
+        loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
+        return loss.mean()
     
     
 class TverskyLoss(base.Loss):
@@ -105,7 +105,6 @@ class TverskyLoss(base.Loss):
             ignore_channels=self.ignore_channels,
         )
 
-    
     
 class L1Loss(nn.L1Loss, base.Loss):
     pass
