@@ -53,7 +53,7 @@ class Fscore(base.Metric):
 
 
 class Accuracy(base.Metric):
-
+    __name__ = 'acc_score'
     def __init__(self, threshold=0.5, activation=None, ignore_channels=None, **kwargs):
         super().__init__(**kwargs)
         self.threshold = threshold
