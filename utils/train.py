@@ -7,7 +7,7 @@ from .metrics import IOU
 
 class Epoch:
 
-    def __init__(self, model, loss, metrics, stage_name, device='cpu', verbose=True, iteration=None):
+    def __init__(self, model, loss, metrics, stage_name, device='cpu', verbose=True, iteration=None,task='seg'):
         self.model = model
         self.loss = loss
         self.metrics = metrics
@@ -15,6 +15,7 @@ class Epoch:
         self.verbose = verbose
         self.device = device
         self.iteration = iteration
+        self.task = task
         self._to_device()
 
     def _to_device(self):
@@ -40,13 +41,13 @@ class Epoch:
         logs = {}
             
         if isinstance(self.loss, list):
-            loss_meter = {'loss_seg':AverageValueMeter(),'loss_cls':AverageValueMeter()}
+            loss_meter = {'loss_main':AverageValueMeter(),'loss_aux':AverageValueMeter()}
             metrics_meters = {metric.__name__: AverageValueMeter() for metric in self.metrics}
             metrics_meters_aux = {metric.__name__+'_aux': AverageValueMeter() for metric in self.metrics}
 #             metrics_meters = {**metrics_meters, **metrics_meters_aux}
         else:
 #             loss_meter = AverageValueMeter()
-            loss_meter = {'loss_seg':AverageValueMeter()}
+            loss_meter = {'loss_main':AverageValueMeter()}
             metrics_meters = {metric.__name__: AverageValueMeter() for metric in self.metrics}
 
         with tqdm(dataloader, desc=self.stage_name, file=sys.stdout, disable=not (self.verbose)) as iterator:
@@ -56,15 +57,21 @@ class Epoch:
                         break
                         
                 x = batch['data'].to(self.device)
-                y = batch['seg'].to(self.device)
-                z = batch['cls'].to(self.device)
-                
+                if self.task=='seg':
+                    y = batch['seg'].to(self.device)
+                    z = batch['cls'].to(self.device)
+                elif self.task=='cls':
+                    y = batch['cls'].to(self.device)
+                    z = batch['seg'].to(self.device)
+                else:
+                    print('need 3 inputs containing dummy input')
+                    
                 if isinstance(self.loss, list):                
                     loss, loss_aux, y_pred, y_pred_aux = self.batch_update(x, y, z)
                     loss_value, loss_aux_value = loss.cpu().detach().numpy(), loss_aux.cpu().detach().numpy()
-                    loss_meter['loss_seg'].add(loss_value)
-                    loss_meter['loss_cls'].add(loss_aux_value)
-                    loss_logs = {'loss_seg': loss_meter['loss_seg'].mean,'loss_cls': loss_meter['loss_cls'].mean}
+                    loss_meter['loss_main'].add(loss_value)
+                    loss_meter['loss_aux'].add(loss_aux_value)
+                    loss_logs = {'loss_main': loss_meter['loss_main'].mean,'loss_aux': loss_meter['loss_aux'].mean}
                     
                     # update metrics logs
                     for metric_fn in self.metrics:
@@ -81,8 +88,8 @@ class Epoch:
                     loss_value = loss.cpu().detach().numpy()
 #                     loss_meter.add(loss_value)
 #                     loss_logs = {self.loss.__name__: loss_meter.mean}
-                    loss_meter['loss_seg'].add(loss_value)
-                    loss_logs = {'loss_seg': loss_meter['loss_seg'].mean}
+                    loss_meter['loss_main'].add(loss_value)
+                    loss_logs = {'loss_main': loss_meter['loss_main'].mean}
         
                     # update metrics logs
                     for metric_fn in self.metrics:
@@ -110,7 +117,7 @@ class Epoch:
 
 class TrainEpoch(Epoch):
 
-    def __init__(self, model, loss, metrics, optimizer, device='cpu', verbose=True, iteration =None):
+    def __init__(self, model, loss, metrics, optimizer, device='cpu', verbose=True, iteration =None,task='seg'):
         super().__init__(
             model=model,
             loss=loss,
@@ -118,7 +125,8 @@ class TrainEpoch(Epoch):
             stage_name='train',
             device=device,
             verbose=verbose,
-            iteration = iteration
+            iteration = iteration,
+            task = task
         )
         self.optimizer = optimizer
         
@@ -146,7 +154,7 @@ class TrainEpoch(Epoch):
 
 class ValidEpoch(Epoch):
 
-    def __init__(self, model, loss, metrics, device='cpu', verbose=True, iteration =None):
+    def __init__(self, model, loss, metrics, device='cpu', verbose=True, iteration =None, task='seg'):
         super().__init__(
             model=model,
             loss=loss,
@@ -154,7 +162,9 @@ class ValidEpoch(Epoch):
             stage_name='valid',
             device=device,
             verbose=verbose,
-            iteration = iteration
+            iteration = iteration,            
+            task = task
+
         )
 
     def on_epoch_start(self):
