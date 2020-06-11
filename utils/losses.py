@@ -86,7 +86,7 @@ class TverskyLoss(base.Loss):
         )
     
 class DiceLoss(base.Loss):
-    def __init__(self,weight):
+    def __init__(self,weight=None):
         super(DiceLoss, self).__init__()
         self.weight = weight
         
@@ -96,6 +96,8 @@ class DiceLoss(base.Loss):
         C = target.size(1)
         smooth = 1
         loss = 0.
+        if self.weight == None:
+            self.weight = torch.ones(C)
         
         input = input.view(N,C,-1)
         target = target.view(N,C,-1)
