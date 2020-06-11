@@ -98,14 +98,13 @@ class DiceLoss(base.Loss):
         loss = 0.
         if self.weight == None:
             self.weight = torch.ones(C)
-        
+            
         input = input.view(N,C,-1)
         target = target.view(N,C,-1)
-        
+
         for c in range(C):
-            
-            iflat = input[:, c].view(-1)
-            tflat = target[:, c].view(-1)
+            iflat = input[:, c]
+            tflat = target[:, c]
             intersection = (iflat * tflat).sum()
 
             w = self.weight[c]
