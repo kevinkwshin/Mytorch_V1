@@ -166,7 +166,7 @@ class IOU(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score =TP / (TP + FP + FN + self.eps)        
+        score = (TP + self.eps) / (TP + FP + FN + self.eps)        
         return score
 
 class SENSITIVITY(base.Metric):
@@ -181,7 +181,7 @@ class SENSITIVITY(base.Metric):
         TP = scores['TP']
         FN = scores['FN']
         
-        score = TP/ (TP + FN + self.eps)
+        score = (TP + self.eps) / (TP + FN + self.eps)
         return score
 
 class ACCURACY(base.Metric):
@@ -198,7 +198,7 @@ class ACCURACY(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (TP+TN)/(TP+FP+FN+TN + self.eps)
+        score = (TP+TN + self.eps)/(TP+FP+FN+TN + self.eps)
         return score
     
 class SPECIFICITY(base.Metric):
@@ -213,7 +213,7 @@ class SPECIFICITY(base.Metric):
         TN = scores['TN']
         FP = scores['FP']
         
-        score = TN/(TN + FP + self.eps)
+        score = (TN+ self.eps)/(TN + FP + self.eps)
         return score
     
 class AUC(base.Metric):
