@@ -21,7 +21,7 @@ class JaccardLoss(base.Loss):
             threshold=None,
             ignore_channels=self.ignore_channels,
         )
-
+    
 # class DiceLoss(base.Loss):
 
 #     def __init__(self, eps=1., beta=1., activation=None, ignore_channels=None, **kwargs):
@@ -40,6 +40,33 @@ class JaccardLoss(base.Loss):
 #             threshold=None,
 #             ignore_channels=self.ignore_channels,
 #         )
+
+class DiceLoss(base.Loss):
+    def __init__(self,weight=None, **kwargs):
+        super().__init__(**kwargs)
+        self.weight = weight
+        
+    def	forward(self, input, target):
+        assert input.shape == target.shape
+        N = target.size(0)
+        C = target.size(1)
+        smooth = 1
+        loss = 0.
+        if self.weight == None:
+            self.weight = [1] * C
+            
+        input = input.view(N,C,-1)
+        target = target.view(N,C,-1)
+
+        for c in range(C):
+            iflat = input[:, c]
+            tflat = target[:, c]
+            intersection = (iflat * tflat).sum()
+
+            w = self.weight[c]
+            loss += w*(1 - ((2. * intersection + smooth) /(iflat.sum() + tflat.sum() + smooth)))
+        
+        return loss    
 
 class BinaryFocalLoss(base.Loss):
     def __init__(self, alpha=0.75, gamma=4.0, activation=None, ignore_channels=None, **kwargs):
@@ -84,33 +111,6 @@ class TverskyLoss(base.Loss):
             threshold=None,
             ignore_channels=self.ignore_channels,
         )
-    
-class DiceLoss(base.Loss):
-    def __init__(self,weight=None):
-        super(DiceLoss, self).__init__()
-        self.weight = weight
-        
-    def	forward(self, input, target):
-        assert input.shape == target.shape
-        N = target.size(0)
-        C = target.size(1)
-        smooth = 1
-        loss = 0.
-        if self.weight == None:
-            self.weight = torch.ones(C)
-            
-        input = input.view(N,C,-1)
-        target = target.view(N,C,-1)
-
-        for c in range(C):
-            iflat = input[:, c]
-            tflat = target[:, c]
-            intersection = (iflat * tflat).sum()
-
-            w = self.weight[c]
-            loss += w*(1 - ((2. * intersection + smooth) /(iflat.sum() + tflat.sum() + smooth)))
-        
-        return loss
     
 class BinaryFocalLoss(base.Loss):
     
@@ -173,7 +173,6 @@ class categorical_focal_loss(base.Loss):
         loss = - gt * (self.alpha * torch.pow((1 - pr), self.gamma) * torch.log(pr))
         
         return torch.mean(loss)
-    
     
 class L1Loss(nn.L1Loss, base.Loss):
     pass
