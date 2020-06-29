@@ -4,12 +4,10 @@ https://github.com/BloodAxe/pytorch-toolbelt
 
 # Define modules
 ```
-# loss1 = DiceLoss([.2,.2,.3,.3,.3])
 loss1 = smp.utils.losses.FocalTversky(alpha=0.3, gamma=0.75, weight=[.25,.15,.25,.25,.1])
 loss2 = smp.utils.losses.categorical_focal_loss(alpha=.25, gamma=4)
 
 loss_seg = loss1 + loss2
-
 loss = loss_seg
 
 metrics = [
