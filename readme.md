@@ -1,4 +1,4 @@
-torch.cuda.empty_cache()
+* To release memory, torch.cuda.empty_cache(). But it would be better to reset ur kernel.
 
 https://github.com/BloodAxe/pytorch-toolbelt
 
