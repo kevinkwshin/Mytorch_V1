@@ -4,8 +4,17 @@ https://github.com/BloodAxe/pytorch-toolbelt
 
 # Import Library
 ```
+!nvidia-smi
+
+import os
+os.environ["CUDA_DEVICE_ORDER"]= "PCI_BUS_ID";
+os.environ["CUDA_VISIBLE_DEVICES"]= "1,2";
+
+import torch
+print(torch.cuda.is_available())
+print(torch.cuda.device_count())
+
 import Mytorch
-# from Mytorch.__init__ import *
 from Mytorch.losses import *
 ```
 
