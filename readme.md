@@ -81,7 +81,40 @@ class Dataset_npy():#DataLoader):
         return {"data":image, "seg":gt_seg, "cls":gt, "fname":self.x_list[index]}
                 
 ```
+```
+batch_size = 20 # 12  # 24g당 12개
+# from Mytorch.imbalanced import ImbalancedDatasetSampler
 
+# def for_sampler_get_label(dataset, idx):
+#     return int(dataset[idx][2])
+
+# train_loader = DataLoader(train_dataset, batch_size=50, shuffle=False, num_workers=0, drop_last=True, pin_memory=True, sampler=ImbalancedDatasetSampler(train_dataset, callback_get_label=for_sampler_get_label))
+# valid_loader = DataLoader(valid_dataset, batch_size=50, shuffle=True, num_workers=0, drop_last=True, pin_memory=True)
+
+train_dataset = Dataset_npy(x_train,y_train,
+                            augmentation=augmentation_train(),
+                            )
+
+valid_dataset = Dataset_npy(x_valid,y_valid,
+                            augmentation=augmentation_valid(),
+                            )
+
+train_loader = DataLoader(train_dataset,
+                          batch_size=batch_size,
+                          num_workers=2,
+                          shuffle=True,
+#                           sampler=ImbalancedDatasetSampler(train_dataset, callback_get_label=for_sampler_get_label)                          
+#                           sampler=torch.utils.data.SubsetRandomSampler(range(int(len(train_dataset)*0.2))), shuffle=False, # boost train speed
+                         )
+
+import pickle
+batch_size = 1
+valid_loader = DataLoader(valid_dataset,
+                          batch_size=batch_size,
+                          num_workers=2,
+                          shuffle=True,
+                         )
+```
 
 # Define modules
 ```
