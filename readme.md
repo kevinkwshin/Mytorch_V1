@@ -11,8 +11,9 @@ os.environ["CUDA_DEVICE_ORDER"]= "PCI_BUS_ID";
 os.environ["CUDA_VISIBLE_DEVICES"]= "1,2";
 
 import torch
+gpus = torch.cuda.device_count()
 print(torch.cuda.is_available())
-print(torch.cuda.device_count())
+print('available gpu:',gpus)
 
 import Mytorch
 from Mytorch.losses import *
@@ -20,8 +21,10 @@ from Mytorch.losses import *
 
 # Parameter Setting
 ```
-# aa = #
-
+task_name = 
+loss = 
+filename = 
+gpus = 
 ```
 
 
