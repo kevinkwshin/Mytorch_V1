@@ -163,6 +163,17 @@ def model_save_state_dict(model,filename,parallel_mode):
     else:
         torch.save({'state_dict': model.module.state_dict()}, filename)
 ```
+# Define Model
+```
+import Mytorch as smp
+
+model = smp.Unet(encoder_name='timm-efficientnet-b7',
+                 decoder_attention_type='scse',        
+                 classes=5,
+                 encoder_weights=None,
+                 activation='softmax',)
+```
+
 
 # Train Loop
 
