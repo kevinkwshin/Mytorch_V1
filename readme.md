@@ -86,5 +86,16 @@ for epoch in range(0, num_epochs):
 ```
 # Inference
 ```
-fff
-```
+model = smp.Unet(encoder_name='timm-efficientnet-b7',
+                 decoder_attention_type='scse',
+#                  aux_params=aux_params,
+                 encoder_weights=None,
+                 classes=5,
+                 activation='softmax',)
+
+model_w = torch.load(filename+'.pt')
+model.load_state_dict(model_w['state_dict'])
+model = model.to(device)
+
+import ttach as tta
+tta_model = tta.SegmentationTTAWrapper(model, tta.aliases.d4_transform(), merge_mode='mean')```
