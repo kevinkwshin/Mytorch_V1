@@ -138,11 +138,16 @@ for epoch in range(0, num_epochs):
 
   train_logs = train_epoch.run(train_loader)
   valid_logs = valid_epoch.run(valid_loader)
-
-#     score.append(valid_logs['loss_main']+valid_logs['loss_sub'])
-#     if np.min(score) == valid_logs['loss_main']+valid_logs['loss_sub'] and epoch > 5:
-#         model_save_state_dict(model,filename+str(epoch),parallel_mode)
-
+  
+    try:
+        score.append(valid_logs['loss_main']+valid_logs['loss_aux'])
+        if np.min(score) == valid_logs['loss_main']+valid_logs['loss_aux'] and epoch > 5:
+            model_save_state_dict(model,filename,parallel_mode)
+    except:
+        score.append(valid_logs['loss_main'])
+        if np.min(score) == valid_logs['loss_main'] and epoch > 5:
+            model_save_state_dict(model,filename,parallel_mode)
+        
   logkeys = list(train_logs)
   logs = {} 
   for logkey in logkeys:
