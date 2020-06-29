@@ -1,8 +1,8 @@
 torch.cuda.empty_cache()
 
 https://github.com/BloodAxe/pytorch-toolbelt
+```
 
-<code>
   from livelossplot import PlotLosses
   plotlosses = PlotLosses()
 
@@ -31,4 +31,4 @@ https://github.com/BloodAxe/pytorch-toolbelt
     plotlosses.update({key_value : logs[key_value] for key_value in logkeys})
     plotlosses.send()
   
-</code>
+```
