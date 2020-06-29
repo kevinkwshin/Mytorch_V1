@@ -2,6 +2,61 @@
 
 https://github.com/BloodAxe/pytorch-toolbelt
 
+# Dataloader
+```
+
+class Dataset_npy():#DataLoader):
+    def __init__(self, x_list, y_list, augmentation=None):
+        self.x_list = x_list
+        self.y_list = y_list
+        self.augmentation = augmentation
+        
+    def __len__(self):
+        return len(self.x_list)
+  
+    def __getitem__(self, index):
+        
+        image = np.load(self.x_list[index])
+        image = image_preprocess_float(image)
+        gt_seg = np.load(self.y_list[index])
+        gt_seg = gt_seg[...,1]
+        
+        gt_seg[gt_seg==2] = 1
+        gt_seg[gt_seg==5] = 4
+        class_values = [1,3,4,6]
+#         class_values = [1,2,3,4,5,6]
+        gt_segs = [(gt_seg == v) for v in class_values]
+        gt_seg = np.stack(gt_segs, axis=-1).astype('float')
+        
+        # add background if mask is not binary
+        if gt_seg.shape[-1] != 1:
+            background = 1 - gt_seg.sum(axis=-1, keepdims=True)
+            gt_seg = np.concatenate((background,gt_seg), axis=-1)
+    
+        if self.augmentation:
+            sample = self.augmentation(image = image, mask = gt_seg)
+            image, gt_seg = sample['image'], sample['mask']
+            
+            n = np.random.randint(0,2,1)[0]
+            if n ==1:
+                image_ = image.copy()
+                image_[:,:,0] = image[:,:,2]
+                image_[:,:,2] = image[:,:,0]
+                image = image_
+                
+        if np.any(gt_seg):
+            gt = torch.tensor([1.],dtype=float)
+        else:
+            gt = torch.tensor([0.],dtype=float)
+
+        image = np.moveaxis(image,-1,0)    
+        gt_seg = np.moveaxis(gt_seg,-1,0)
+        
+        return {"data":image, "seg":gt_seg, "cls":gt, "fname":self.x_list[index]}
+                
+```
+
+
 # Define modules
 ```
 loss1 = smp.utils.losses.FocalTversky(alpha=0.3, gamma=0.75, weight=[.25,.15,.25,.25,.1])
