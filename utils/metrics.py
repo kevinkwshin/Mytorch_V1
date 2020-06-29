@@ -107,7 +107,6 @@ class Precision(base.Metric):
         )
 
     
-    
 def score_numeric(pr,gt,threshold):
     """Computation of statistical numerical scores:
     * FP = False Positives
@@ -135,6 +134,7 @@ def score_numeric(pr,gt,threshold):
     
     return {'FP':FP,'FN':FN,'TP':TP, 'TN': TN}
     
+    
 class DICE(base.Metric):
     __name__ = 'dice_score'
     def __init__(self, eps=1e-7, threshold=0.5, ignore_channels=None, **kwargs):
@@ -149,7 +149,7 @@ class DICE(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        dice = 2*TP/(2*TP + FP + FN + self.eps)
+        dice = (2*TP+ self.eps)/(2*TP + FP + FN + self.eps)
         return dice
     
 class IOU(base.Metric):
@@ -229,15 +229,13 @@ class AUC(base.Metric):
         
         y_gt = y_gt.cpu().detach().numpy().squeeze()
         y_pr = y_pr.cpu().detach().numpy().squeeze()
-#         print(y_gt.shape,y_pr.shape)
-#         score = roc_auc_score(y_gt,y_pr)
         
         try:
             score = roc_auc_score(y_gt,y_pr)
             return torch.tensor(score)
         except:
 #             print(y_gt,y_pr)
-            return torch.tensor(0)
+            return torch.tensor(0.5)
         
 class TP(base.Metric):
     __name__ = 'TP_score'
@@ -253,7 +251,7 @@ class TP(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = TP/(TP + TN + FP + FN+ self.eps)
+        score = (TP+ self.eps)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class TN(base.Metric):
@@ -270,7 +268,7 @@ class TN(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = TN/(TP + TN + FP + FN+ self.eps)
+        score = (TN+ self.eps)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class FP(base.Metric):
@@ -287,7 +285,7 @@ class FP(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = FP/(TP + TN + FP + FN+ self.eps)
+        score = (FP+ self.eps)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class FN(base.Metric):
@@ -304,5 +302,5 @@ class FN(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = FN/(TP + TN + FP + FN+ self.eps)
+        score = (FN+ self.eps)/(TP + TN + FP + FN+ self.eps)
         return score
