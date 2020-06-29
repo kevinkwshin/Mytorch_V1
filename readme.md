@@ -18,6 +18,12 @@ import Mytorch
 from Mytorch.losses import *
 ```
 
+# Parameter Setting
+```
+# aa = #
+
+```
+
 
 # Dataloader
 ```
