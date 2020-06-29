@@ -111,6 +111,40 @@ class TverskyLoss(base.Loss):
             threshold=None,
             ignore_channels=self.ignore_channels,
         )
+
+class FocalTversky(base.Loss):
+    
+    def __init__(self,alpha=0.7, gamma=0.75, weight=None, **kwargs):
+        super().__init__(**kwargs)
+        self.alpha = alpha
+        self.gamma = gamma
+        self.weight= weight
+        
+    def forward(self, pr, gt):
+        eps = 1e-7
+        loss = 0 
+        N = gt.size(0)
+        C = gt.size(1)
+        pr = pr.view(N,C, -1)
+        gt = gt.view(N,C, -1) 
+        assert len(self.weight) == C
+        
+        if self.weight == None:
+            self.weight = [1] * C
+            
+        for c in range(C):
+            prc = pr[:, c]
+            gtc = gt[:, c]
+        
+            true_pos = torch.sum(prc * gtc)
+            false_neg = torch.sum(gtc * (1-prc))
+            false_pos = torch.sum((1-gtc)*prc)
+            
+            w = self.weight[c]
+            pt_1 = (true_pos + eps)/(true_pos + self.alpha*false_neg + (1-self.alpha)*false_pos + eps)
+            loss += torch.pow((1-pt_1), self.gamma) * w
+        
+        return torch.mean(loss)
     
 class BinaryFocalLoss(base.Loss):
     
