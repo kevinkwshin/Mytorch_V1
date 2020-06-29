@@ -19,12 +19,18 @@ import Mytorch
 from Mytorch.losses import *
 ```
 
-# Parameter Setting
+# Parameter Setting & Research Note
 ```
 task_name = 
 loss = 
 filename = 
 gpus = 
+
+# 1st Try
+Focal Loss + Model1
+# 2nd Try
+Focal Loss + Model2
+
 ```
 
 
