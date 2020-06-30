@@ -7,14 +7,13 @@ from .metrics import IOU
 
 class Epoch:
 
-    def __init__(self, model, loss, metrics, stage_name, device='cpu', verbose=True, iteration=None,task='seg'):
+    def __init__(self, model, loss, metrics, stage_name, device='cpu', verbose=True, task='seg'):
         self.model = model
         self.loss = loss
         self.metrics = metrics
         self.stage_name = stage_name
         self.verbose = verbose
         self.device = device
-        self.iteration = iteration
         self.task = task
         self._to_device()
 
@@ -51,9 +50,6 @@ class Epoch:
 
         with tqdm(dataloader, desc=self.stage_name, file=sys.stdout, disable=not (self.verbose)) as iterator:
             for iteration,batch in enumerate(iterator):
-                if self.iteration is not None:
-                    if self.iteration < iteration:
-                        break
                         
                 x = batch['data'].to(self.device)
                 if self.task=='seg':
@@ -116,7 +112,7 @@ class Epoch:
 
 class TrainEpoch(Epoch):
 
-    def __init__(self, model, loss, metrics, optimizer, device='cpu', verbose=True, iteration =None,task='seg'):
+    def __init__(self, model, loss, metrics, optimizer, device='cpu', verbose=True, task='seg'):
         super().__init__(
             model=model,
             loss=loss,
@@ -124,7 +120,6 @@ class TrainEpoch(Epoch):
             stage_name='train',
             device=device,
             verbose=verbose,
-            iteration = iteration,
             task = task
         )
         self.optimizer = optimizer
@@ -153,15 +148,14 @@ class TrainEpoch(Epoch):
 
 class ValidEpoch(Epoch):
 
-    def __init__(self, model, loss, metrics, device='cpu', verbose=True, iteration =None, task='seg'):
+    def __init__(self, model, loss, metrics, device='cpu', verbose=True,  task='seg'):
         super().__init__(
             model=model,
             loss=loss,
             metrics=metrics,
             stage_name='valid',
             device=device,
-            verbose=verbose,
-            iteration = iteration,            
+            verbose=verbose,          
             task = task
 
         )
