@@ -177,9 +177,15 @@ class UNet_3Plus(nn.Module):
         self.conv1d_1 = nn.Conv2d(self.UpChannels, self.UpChannels, 3, padding=1)  # 16
         self.bn1d_1 = nn.BatchNorm2d(self.UpChannels)
         self.relu1d_1 = nn.ReLU(inplace=True)
-
+        
         # output
         self.outconv1 = nn.Conv2d(self.UpChannels, n_classes, 3, padding=1)
+        if last_activation == 'sigmoid':
+            self.last_activation = nn.Sigmoid()
+        elif last_activation == 'softmax':
+            self.last_activation = nn.Sofmax()
+        else:
+            prin('you need sigmoid or softmax')
 
         # initialise weights
         for m in self.modules():
@@ -238,7 +244,9 @@ class UNet_3Plus(nn.Module):
             torch.cat((h1_Cat_hd1, hd2_UT_hd1, hd3_UT_hd1, hd4_UT_hd1, hd5_UT_hd1), 1)))) # hd1->320*320*UpChannels
 
         d1 = self.outconv1(hd1)  # d1->320*320*n_classes
-        return F.sigmoid(d1)
+        d1 = self.last_activation(d1)
+        
+        return d1   
     
 '''
     UNet 3+ with deep supervision
