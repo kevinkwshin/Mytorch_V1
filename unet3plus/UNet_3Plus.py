@@ -183,7 +183,7 @@ class UNet_3Plus(nn.Module):
         if last_activation == 'sigmoid':
             self.last_activation = nn.Sigmoid()
         elif last_activation == 'softmax':
-            self.last_activation = nn.Sofmax()
+            self.last_activation = nn.Softmax()
         else:
             prin('you need sigmoid or softmax')
 
