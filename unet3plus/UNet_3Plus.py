@@ -9,7 +9,7 @@ from init_weights import init_weights
 '''
 class UNet_3Plus(nn.Module):
 
-    def __init__(self, in_channels=3, n_classes=1, feature_scale=4, is_deconv=True, is_batchnorm=True):
+    def __init__(self, in_channels=3, n_classes=1, feature_scale=4, is_deconv=True, is_batchnorm=True, last_activation='sigmoid'):
         super(UNet_3Plus, self).__init__()
         self.is_deconv = is_deconv
         self.in_channels = in_channels
