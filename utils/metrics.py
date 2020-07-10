@@ -234,7 +234,7 @@ class AUC(base.Metric):
             score = roc_auc_score(y_gt,y_pr)
             return torch.tensor(score)
         except:
-#             print(y_gt,y_pr)
+            print('Class is imbalanced',y_gt,y_pr)
             return torch.tensor(0.5)
         
 class TP(base.Metric):
