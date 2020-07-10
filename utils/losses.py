@@ -127,7 +127,6 @@ class FocalTversky(base.Loss):
         C = gt.size(1)
         pr = pr.view(N,C, -1)
         gt = gt.view(N,C, -1) 
-        assert len(self.weight) == C
         
         if self.weight == None:
             self.weight = [1] * C
