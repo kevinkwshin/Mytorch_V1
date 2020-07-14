@@ -134,7 +134,6 @@ def score_numeric(pr,gt,threshold):
     
     return {'FP':FP,'FN':FN,'TP':TP, 'TN': TN}
     
-    
 class DICE(base.Metric):
     __name__ = 'dice_score'
     def __init__(self, eps=1e-7, threshold=0.5, ignore_channels=None, **kwargs):
@@ -181,7 +180,7 @@ class SENSITIVITY(base.Metric):
         TP = scores['TP']
         FN = scores['FN']
         
-        score = (TP + self.eps) / (TP + FN + self.eps)
+        score = (TP) / (TP + FN + self.eps)
         return score
 
 class ACCURACY(base.Metric):
@@ -198,7 +197,7 @@ class ACCURACY(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (TP+TN + self.eps)/(TP+FP+FN+TN + self.eps)
+        score = (TP+TN)/(TP+FP+FN+TN + self.eps)
         return score
     
 class SPECIFICITY(base.Metric):
@@ -213,7 +212,7 @@ class SPECIFICITY(base.Metric):
         TN = scores['TN']
         FP = scores['FP']
         
-        score = (TN+ self.eps)/(TN + FP + self.eps)
+        score = (TN)/(TN + FP + self.eps)
         return score
     
 class AUC(base.Metric):
@@ -251,7 +250,7 @@ class TP(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (TP+ self.eps)/(TP + TN + FP + FN+ self.eps)
+        score = (TP)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class TN(base.Metric):
@@ -268,7 +267,7 @@ class TN(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (TN+ self.eps)/(TP + TN + FP + FN+ self.eps)
+        score = (TN)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class FP(base.Metric):
@@ -285,7 +284,7 @@ class FP(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (FP+ self.eps)/(TP + TN + FP + FN+ self.eps)
+        score = (FP)/(TP + TN + FP + FN+ self.eps)
         return score
     
 class FN(base.Metric):
@@ -302,5 +301,5 @@ class FN(base.Metric):
         FN = scores['FN']
         TN = scores['TN']
         
-        score = (FN+ self.eps)/(TP + TN + FP + FN+ self.eps)
+        score = (FN)/(TP + TN + FP + FN+ self.eps)
         return score
