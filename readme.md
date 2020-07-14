@@ -15,8 +15,8 @@ gpus = torch.cuda.device_count()
 print(torch.cuda.is_available())
 print('available gpu:',gpus)
 
+!pip install -r Mytorch/requirements.txt
 import Mytorch
-from Mytorch.losses import *
 ```
 
 # Parameter Setting & Research Note
