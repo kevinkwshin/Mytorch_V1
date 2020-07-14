@@ -182,7 +182,7 @@ class UNet_3Plus(nn.Module):
         if auxiliary == True:
             self.cls = nn.Sequential(
                         nn.Dropout(p=0.5),
-                        nn.Conv2d(filters[4], 2, 1),
+                        nn.Conv2d(filters[4], 1, 1),
                         nn.AdaptiveMaxPool2d(1),
                         nn.Sigmoid())
         
