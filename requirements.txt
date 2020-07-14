@@ -1,5 +1,5 @@
 pretrainedmodels
-mclahe
+https://github.com/VincentStimper/mclahe/archive/numpy.zip
 efficientnet_pytorch
 timm==0.1.26
 torch
