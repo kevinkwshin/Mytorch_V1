@@ -269,3 +269,34 @@ model = model.to(device)
 
 import ttach as tta
 tta_model = tta.SegmentationTTAWrapper(model, tta.aliases.d4_transform(), merge_mode='mean')```
+
+
+
+
+```
+dice = smp.utils.metrics.DICE(threshold=0.5)
+
+def evaluation(model,loader):
+    model = model.to(device)
+
+    model.eval()
+    gt_stack = []
+    pred_stack = []
+    
+    for batch in loader:
+        
+        image = batch['data'].to(device)
+        gt_seg = batch['seg'].to(device)
+        gt_cls = batch['cls'].to(device)
+        
+        with torch.no_grad():
+            pr_mask, pr_cls = model(image)
+            gt_stack.append(gt_cls)
+            pred_stack.append(pr_cls)
+            print(pred_stack,gt_stack)
+        
+    return pred_stack, gt_stack
+
+evaluation(model,test_loader)
+
+```
