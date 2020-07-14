@@ -10,8 +10,7 @@ from . import utils
 
 from .__version__ import __version__
 
-
-
+import glob
 import scipy
 from scipy import ndimage
 import numpy as np
@@ -48,17 +47,17 @@ print('torch.__version__ :', torch.__version__)
 print('torch.cuda.is_available() :', torch.cuda.is_available())
 print('torch.cuda.device_count() :', torch.cuda.device_count())
 
-def model_test(model,inputs_shape):
-    model.eval()
-    try:
-        inputs = torch.rand(inputs_shape)
-        preds = model(inputs)
-        print('inputs_shape',inputs_shape)
-        print('shape:',preds.shape)
-        print('preds',preds)
-    except:
-        inputs = torch.rand(inputs_shape).cuda()
-        preds = model(inputs).cuda()
-        print('inputs_shape',inputs_shape)
-        print('shape:',preds.shape)
-        print('preds',preds)
+# def model_test(model,inputs_shape):
+#     model.eval()
+#     try:
+#         inputs = torch.rand(inputs_shape)
+#         preds = model(inputs)
+#         print('inputs_shape',inputs_shape)
+#         print('shape:',preds.shape)
+#         print('preds',preds)
+#     except:
+#         inputs = torch.rand(inputs_shape).cuda()
+#         preds = model(inputs).cuda()
+#         print('inputs_shape',inputs_shape)
+#         print('shape:',preds.shape)
+#         print('preds',preds)
