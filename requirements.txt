@@ -9,3 +9,5 @@ albumentations
 
 numpy
 scipy
+SimpleITK
+nibabel
