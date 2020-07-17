@@ -123,6 +123,7 @@ valid_loader = DataLoader(valid_dataset,
 ```
 
 # Albumentation
+```
 # !pip install -U git+https://github.com/albu/albumentations
 import albumentations as albu
 
@@ -156,7 +157,7 @@ def augmentation_train():
 def augmentation_valid(center=None):
     test_transform = []
     return albu.Compose(test_transform)
-
+```
 
 # Define modules
 ```
