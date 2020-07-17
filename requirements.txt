@@ -11,3 +11,4 @@ numpy
 scipy
 SimpleITK
 nibabel
+tensorboardX
