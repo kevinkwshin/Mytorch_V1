@@ -11,6 +11,8 @@ class Activation(nn.Module):
             self.activation = nn.Identity()
         elif activation == 'sigmoid':
             self.activation = torch.sigmoid
+        elif activation == 'relu':
+            self.activation = torch.relu
         elif activation == 'softmax2d':
             self.activation = functools.partial(torch.softmax, dim=1)
         elif callable(activation):
