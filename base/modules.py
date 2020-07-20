@@ -85,6 +85,8 @@ class Activation(nn.Module):
             self.activation = nn.Sigmoid()
         elif name == 'relu':
             self.activation = nn.ReLU( **params)
+        elif name == 'tanh':
+            self.activation = nn.Tanh( **params)
         elif name == 'softmax2d':
             self.activation = nn.Softmax(dim=1, **params)
         elif name == 'softmax':
