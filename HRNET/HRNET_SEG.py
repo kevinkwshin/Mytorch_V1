@@ -497,10 +497,10 @@ def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_ch
     pretrained '18' or '48'
     """
     if pretrained=='18':
-        with open(r'config_w18.yaml') as file:
+        with open(r'MYTORCH/HRNET/config_w18.yaml') as file:
             cfg = yaml.load(file, Loader=yaml.FullLoader)
     elif pretrained=='48':
-        with open(r'config_w48.yaml') as file:
+        with open(r'MYTORCH/HRNET/config_w48.yaml') as file:
             cfg = yaml.load(file, Loader=yaml.FullLoader)
     cfg = munchify(cfg)
     
