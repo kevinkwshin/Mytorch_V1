@@ -489,7 +489,7 @@ class HighResolutionNet(nn.Module):
             model_dict.update(pretrained_dict)
             self.load_state_dict(model_dict,strict=False)
 
-from MUNCH import *
+from .MUNCH import *
 import yaml
 
 def get_seg_model(pretrained='18',activation='sigmoid', auxilary=False, input_ch=3, output_ch=1, **kwargs):
