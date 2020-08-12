@@ -306,6 +306,8 @@ class HighResolutionNet(nn.Module):
             self.final_layer = self._make_head(pre_stage_channels)
 
         self.classifier = nn.Linear(2048, 1000)
+        self.last_layer = nn.Squence(nn.Linear(1000,1),nn.Sigmoid())
+
 
     def _make_head(self, pre_stage_channels):
         head_block = Bottleneck
@@ -487,6 +489,7 @@ class HighResolutionNet(nn.Module):
                                  [2:]).view(y.size(0), -1)
 
         y = self.classifier(y)
+        y = self.last_layer(y)
 
         return y
 
