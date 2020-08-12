@@ -460,7 +460,6 @@ class HighResolutionNet(nn.Module):
         x = self.last_layer(x)
         x = self.activation(x)
         
-        y = self.classifier(y)
         
         if self.auxilary==False:
             return x
@@ -481,7 +480,8 @@ class HighResolutionNet(nn.Module):
             else:
                 y = F.avg_pool2d(y, kernel_size=y.size()
                                      [2:]).view(y.size(0), -1)
-    
+            
+            y = self.classifier(y)
     
             return x, y
 
