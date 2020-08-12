@@ -516,3 +516,18 @@ def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
     model.init_weights()
     return model
+
+def get_cls_model(pretrained='18', **kwargs):
+    """
+    pretrained '18' or '48'
+    """
+    if pretrained=='18':
+        with open(r'Mytorch/HRNET/config_w18.yaml') as file:
+            cfg = yaml.load(file, Loader=yaml.FullLoader)
+    elif pretrained=='48':
+        with open(r'Mytorch/HRNET/config_w48.yaml') as file:
+            cfg = yaml.load(file, Loader=yaml.FullLoader)
+    cfg = munchify(cfg)
+    
+    model = HighResolutionNet(cfg, **kwargs)
+    model.init_weights(cfg.MODEL.PRETRAINED)
