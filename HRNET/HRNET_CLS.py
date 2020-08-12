@@ -533,3 +533,4 @@ def get_cls_model(pretrained='18', **kwargs):
     
     model = HighResolutionNet(cfg, **kwargs)
     model.init_weights(cfg.MODEL.PRETRAINED)
+    return model
