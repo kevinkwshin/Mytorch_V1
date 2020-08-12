@@ -328,7 +328,8 @@ class HighResolutionNet(nn.Module):
             self.incre_modules, self.downsamp_modules, \
                 self.final_layer = self._make_head(pre_stage_channels)
 
-            self.classifier = nn.Linear(2048, 1)
+            self.classifier = nn.Linear(2048, 1000)
+            self.final_classifier = nn.Sequential(nn.Linear(1000,1),nn.Sigmoid())
 #             self.classifier = nn.Sequential(
 #                                         nn.Conv2d(1,1,1),
 #                                         nn.AdaptiveAvgPool2d((1,1)),
@@ -536,6 +537,7 @@ class HighResolutionNet(nn.Module):
                                      [2:]).view(y.size(0), -1)
             
             y = self.classifier(y)
+            y = self.final_classifier(y)
     
             return x, y
 
