@@ -446,6 +446,7 @@ class HighResolutionNet(nn.Module):
                 x_list.append(y_list[i])
         x = self.stage4(x_list)
         
+        
         #Segmentation
         # Upsampling
         x[0] = F.upsample(x[0],size=(x_shape), mode='bilinear')
@@ -455,18 +456,34 @@ class HighResolutionNet(nn.Module):
         x3 = F.upsample(x[3], size=(x0_h, x0_w), mode='bilinear')
     
         x = torch.cat([x[0], x1, x2, x3], 1)    
-#         if self.auxilary==True:
-#             x_cls = self.classifier(x)
+        
         x = self.last_layer(x)
         x = self.activation(x)
         
-        if self.auxilary==True:
-            x_cls = self.classifier(x)
+        y = self.classifier(y)
         
         if self.auxilary==False:
             return x
-        elif self.auxilary==True:
-            return x, x_cls        
+        elif self.auxilary==True:    
+            
+#             x_cls = self.classifier(x)
+           
+            # Classification Head
+            y = self.incre_modules[0](y_list[0])
+            for i in range(len(self.downsamp_modules)):
+                y = self.incre_modules[i+1](y_list[i+1]) + \
+                            self.downsamp_modules[i](y)
+
+            y = self.final_layer(y)
+
+            if torch._C._get_tracing_state():
+                y = y.flatten(start_dim=2).mean(dim=2)
+            else:
+                y = F.avg_pool2d(y, kernel_size=y.size()
+                                     [2:]).view(y.size(0), -1)
+    
+    
+            return x, y
 
     def init_weights(self, pretrained='',):
         logger.info('=> init weights from normal distribution')
