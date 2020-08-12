@@ -511,6 +511,8 @@ class HighResolutionNet(nn.Module):
             model_dict.update(pretrained_dict)
             self.load_state_dict(model_dict)
 
+from .MUNCH import *
+import yaml
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
