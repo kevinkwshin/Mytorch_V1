@@ -306,7 +306,7 @@ class HighResolutionNet(nn.Module):
             self.final_layer = self._make_head(pre_stage_channels)
 
         self.classifier = nn.Linear(2048, 1000)
-        self.last_layer = nn.Squence(nn.Linear(1000,1),nn.Sigmoid())
+        self.last_layer = nn.Squential(nn.Linear(1000,1),nn.Sigmoid())
 
 
     def _make_head(self, pre_stage_channels):
