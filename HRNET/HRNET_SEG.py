@@ -324,12 +324,17 @@ class HighResolutionNet(nn.Module):
             self.activation = nn.Softmax(dim=1)
         self.auxilary = auxilary
         if auxilary==True:
-            self.classifier = nn.Sequential(
-                                        nn.Conv2d(1,1,1),
-                                        nn.AdaptiveAvgPool2d((1,1)),
-                                        nn.Flatten(),
-                                        nn.Sigmoid()
-                                        )
+
+            self.incre_modules, self.downsamp_modules, \
+                self.final_layer = self._make_head(pre_stage_channels)
+
+            self.classifier = nn.Linear(2048, 1)
+#             self.classifier = nn.Sequential(
+#                                         nn.Conv2d(1,1,1),
+#                                         nn.AdaptiveAvgPool2d((1,1)),
+#                                         nn.Flatten(),
+#                                         nn.Sigmoid()
+#                                         )
 
     def _make_transition_layer(
             self, num_channels_pre_layer, num_channels_cur_layer):
