@@ -1,6 +1,6 @@
 * To release memory, torch.cuda.empty_cache(). But it would be better to reset ur kernel.
 
-https://github.com/BloodAxe/pytorch-toolbelt
+The code is based on Pytorch Lightning
 
 # GPU Setting
 ```
