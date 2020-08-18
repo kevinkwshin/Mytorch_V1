@@ -2,35 +2,98 @@
 
 https://github.com/BloodAxe/pytorch-toolbelt
 
-# Import Library
+# GPU Setting
 ```
 !nvidia-smi
+gpus= "7"
 
 import os
 os.environ["CUDA_DEVICE_ORDER"]= "PCI_BUS_ID";
-os.environ["CUDA_VISIBLE_DEVICES"]= "1,2";
+os.environ["CUDA_VISIBLE_DEVICES"]= gpus;
 
 import torch
-gpus = torch.cuda.device_count()
+gpu_count = torch.cuda.device_count()
 print(torch.cuda.is_available())
-print('available gpu:',gpus)
+print(gpu_count)
+```
 
+# Import Library
+```
 !pip install -r Mytorch/requirements.txt
 import Mytorch
 ```
 
 # Parameter Setting & Research Note
 ```
-task_name = 
-loss = 
-filename = 
-gpus = 
+!sudo pip install pytorch_lightning torch_optimizer wandb --quiet
 
-# 1st Try
-Focal Loss + Model1
-# 2nd Try
-Focal Loss + Model2
+import pytorch_lightning as pl
+from pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning.callbacks import ModelCheckpoint, Callback
+from pytorch_lightning.loggers import WandbLogger
+import torch_optimizer
+import torchvision
+import wandb
+import torch.nn as nn
 
+class compoundloss(nn.Module):    
+    def __init__(self,  **kwargs):
+        super().__init__(**kwargs)
+        
+    def forward(self, pr, gt):
+        loss3= Mytorch.utils.losses.BinaryFocalLoss(alpha=.5, gamma=2) #FocalTversky(alpha=0.4, gamma=0.75, weight=[.1])
+        loss = loss3(pr,gt)
+    
+        return torch.mean(loss)
+
+checkpoint_callback = ModelCheckpoint(
+#     filepath='test.ckpt',
+    verbose=True,
+    monitor='val_loss',
+    mode='min'
+)
+
+seed_everything(1)
+loss = nn.BCEWithLogitsLoss()
+
+distributed_backend = 'dp' if gpu_count>1 else None
+# sampler = ImbalancedDatasetSampler(train_dataset, callback_get_label=for_sampler_get_label)
+sampler = None
+
+resume_from_checkpoint = None
+# resume_from_checkpoint = '/workspace/Brain_Hemo/Code/brain_hemo/EfficientNet_BCEWithLogitsLoss/checkpoints/epoch=12.ckpt'
+metric = pl.metrics.Accuracy()
+
+config = {
+    "project_name":"Tendon_seg",
+    "exam_name":net.__repr__().split('(')[0]+'_'+loss.__repr__()[:-2],    
+    "resume_from_checkpoint":resume_from_checkpoint,
+    "learning_rate": 5e-4,
+    "epoch": 1000,
+    "batch_size": 32,
+    "amp_level":'O1',
+    "precision":16,
+    "metric": metric,
+    "loss": loss,
+    "gpus":gpus,
+    "net":net,    
+    "distributed_backend":distributed_backend,
+#     "auto_scale_batch_size":False,
+    "auto_scale_batch_size":True,
+    "sampler":sampler,
+}
+
+
+def experiment_name(config):
+    exam_name = ''+'_'+loss.__repr__()[:-2]+'_'
+    return exam_name
+
+exam_name = experiment_name(config)
+
+logger = WandbLogger(project=config['project_name'],
+                     name=config['exam_name'],
+                     id=config['exam_name'],
+                    )
 ```
 
 
@@ -87,39 +150,158 @@ class Dataset_npy():#DataLoader):
         return {"data":image, "seg":gt_seg, "cls":gt, "fname":self.x_list[index]}
                 
 ```
+class SegModel_plain(pl.LightningModule):
+
+    def __init__(self,config, **kwargs):
+        super().__init__()
+        
+        self.net = config['net']
+        self.learning_rate = config['learning_rate']
+        self.batch_size = config['batch_size']
+        self.loss = config['loss']
+        self.metric = config['metric']
+        
+        self.save_hyperparameters()        
+
+    def forward(self, x):
+        return self.net(x)
+
+    def training_step(self, batch, batch_idx):
+        
+        x = batch['data']
+        y = batch['seg']
+        pred = self(x)
+        loss = self.loss(pred,y)
+        
+        logs = {"train_loss": loss,}# "train_accuracy": accuracy,"train_dice":dice}#, "train_auc":auc}
+
+        return {'loss': loss,
+#                 'log': log_dict,
+                'progress_bar': logs,
+#                 'x': x, 'y': y, 'pred': pred
+               }
+    
+    def validation_step(self, batch, batch_idx):
+        x = batch['data']
+        y = batch['seg']
+        pred = self(x)
+        loss = self.loss(pred,y)
+        
+#         loss = F.binary_cross_entropy_with_logits(pred_cls,y_cls)
+        pred = F.sigmoid(pred)
+    
+        return {'val_loss': loss,
+                'x':x,
+                'y':y,
+                'pred':pred
+               }
+    
+    def batch_prediction(self, inputs, batch_size):
+
+        y_preds=[]
+        total_batch  = int(np.ceil(len(inputs)/batch_size))
+        for idx in range(total_batch):
+            batch_ = inputs[idx*batch_size:(idx+1)*batch_size]
+            y_pred = self.forward(batch_)
+            y_preds.append(y_pred)
+
+        y_preds = torch.cat(y_preds,dim=0)
+        return y_preds
+    
+    def test_step(self, batch, batch_idx):
+        
+        x = batch['data'].squeeze(0)
+        y_seg = batch['seg'].squeeze(0)
+        pred_cls = self(x)
+        loss = self.loss(pred_cls,y_cls)
+#         loss = F.binary_cross_entropy_with_logits(pred_cls,y_cls)
+        pred_cls = F.sigmoid(pred_cls)
+    
+        return {'loss_test': loss, 
+                'x':x,
+                'y':y,
+                'pred':pred
+               }
+
+    def validation_epoch_end(self, outputs):
+        val_loss_mean = torch.stack([x['val_loss'] for x in outputs]).mean()
+        
+        x = torch.cat([x['x'] for x in outputs])
+        y = torch.cat([x['y'] for x in outputs]).cpu().squeeze()
+        pred = torch.cat([x['pred'] for x in outputs]).cpu().squeeze()
+                
+#         accuracy = pl.metrics.functional.accuracy(pred_cls.round(),y_cls)
+#         dice = pl.metrics.functional.dice_score(pred_cls.round(),y_cls)
+# #         auc = pl.metrics.functional.auroc(pred_cls.round(),y_cls)
+    
+#         logs = {"val_loss": val_loss_mean, "valid_accuracy": accuracy,"valid_dice":dice}#, "valid_auc":auc}
+
+        try:
+            acc = sklearn.metrics.accuracy_score(y_cls,pred_cls.round())
+            f1 = sklearn.metrics.f1_score(y_cls,pred_cls.round())
+            recall=sklearn.metrics.recall_score(y_cls,pred_cls.round())
+            AUROC = sklearn.metrics.roc_auc_score(y_cls,pred_cls)
+            cm = sklearn.metrics.confusion_matrix(y_cls,pred_cls.round())
+
+            print("epoch {} acc {} recall {} f1 {} AUROC {} confusion matrix:\n {}".format(self.current_epoch,acc,recall,f1,AUROC,cm))
+        except:
+            pass
+        
+        logs = {"val_loss": val_loss_mean,}
+        return {'log':logs}
+    
+    
+    def test_epoch_end(self, outputs):
+#         test_loss_mean = torch.stack([x['loss_test'] for x in outputs]).mean()
+                    
+        x = torch.cat([x['x'] for x in outputs])
+        y = torch.cat([x['y'] for x in outputs]).cpu().squeeze().numpy()
+        pred = torch.cat([x['pred'] for x in outputs]).cpu().squeeze().numpy()
+        
+        print('acc:',sklearn.metrics.accuracy_score(y_cls,pred_cls.round()))
+        print('f1:',sklearn.metrics.f1_score(y_cls.squeeze(),pred_cls.round()))
+        print('AUC:',sklearn.metrics.roc_auc_score(y_cls.squeeze(),pred_cls))   
+        print('confusion matrix:\n',sklearn.metrics.confusion_matrix(y_cls,pred_cls.round()))
+        
+        cm = sklearn.metrics.confusion_matrix(y_cls,pred_cls.round())
+        sklearn.metrics.ConfusionMatrixDisplay(cm).plot(cmap='Blues')
+        
+        print(sklearn.metrics.classification_report(y_cls,pred_cls.round()))
+
+        return {
+#                 'loss_test':test_loss_mean,
+#                 'outputs':outputs,
+               }
+    
+    def train_dataloader(self):
+        return DataLoader(train_dataset, shuffle=True, batch_size=self.batch_size,sampler=config['sampler']) 
+    
+    def val_dataloader(self):
+        return DataLoader(valid_dataset, shuffle=True, batch_size=self.batch_size) 
+
+    def test_dataloader(self):
+        return DataLoader(test_dataset, shuffle=True, batch_size=1) 
+    
+    def configure_optimizers(self):    
+        opt = torch_optimizer.Yogi(self.net.parameters(), lr=self.learning_rate)
+#         opt = torch.optim.SGD(self.net.parameters(), lr=self.learning_rate)
+        sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.9, patience=0, verbose=True)
+        return [opt], [sch] 
+    
+    
+trainer = pl.Trainer(max_epochs=config['epoch'],
+                     resume_from_checkpoint=config['resume_from_checkpoint'],
+                     logger = logger,
+#                      callbacks=[metrics_callback],
+                     checkpoint_callback=checkpoint_callback,
+                     amp_level=config['amp_level'],
+                     precision=config['precision'],
+                     distributed_backend=config['distributed_backend'],
+                     gpus=config['gpus'],             
+                     auto_scale_batch_size =config['auto_scale_batch_size']
+                    )
 ```
-batch_size = 20 # 12  # 24g당 12개
-# from Mytorch.imbalanced import ImbalancedDatasetSampler
 
-# def for_sampler_get_label(dataset, idx):
-#     return int(dataset[idx][2])
-
-# train_loader = DataLoader(train_dataset, batch_size=50, shuffle=False, num_workers=0, drop_last=True, pin_memory=True, sampler=ImbalancedDatasetSampler(train_dataset, callback_get_label=for_sampler_get_label))
-# valid_loader = DataLoader(valid_dataset, batch_size=50, shuffle=True, num_workers=0, drop_last=True, pin_memory=True)
-
-train_dataset = Dataset_npy(x_train,y_train,
-                            augmentation=augmentation_train(),
-                            )
-
-valid_dataset = Dataset_npy(x_valid,y_valid,
-                            augmentation=augmentation_valid(),
-                            )
-
-train_loader = DataLoader(train_dataset,
-                          batch_size=batch_size,
-                          num_workers=2,
-                          shuffle=True,
-#                           sampler=ImbalancedDatasetSampler(train_dataset, callback_get_label=for_sampler_get_label)                          
-#                           sampler=torch.utils.data.SubsetRandomSampler(range(int(len(train_dataset)*0.2))), shuffle=False, # boost train speed
-                         )
-
-import pickle
-batch_size = 1
-valid_loader = DataLoader(valid_dataset,
-                          batch_size=batch_size,
-                          num_workers=2,
-                          shuffle=True,
-                         )
 ```
 
 # Albumentation
@@ -161,143 +343,6 @@ def augmentation_valid(center=None):
 
 # Define modules
 ```
-loss1 = smp.utils.losses.FocalTversky(alpha=0.3, gamma=0.75, weight=[.25,.15,.25,.25,.1])
-loss2 = smp.utils.losses.categorical_focal_loss(alpha=.25, gamma=4)
-
-loss_seg = loss1 + loss2
-loss = loss_seg
-
-metrics = [
-    smp.utils.metrics.IoU(threshold=0.5),
-    smp.utils.metrics.DICE(threshold=0.5),
-    smp.utils.metrics.SENSITIVITY(threshold=0.5),
-    smp.utils.metrics.SPECIFICITY(threshold=0.5),
-]
-
-initial_lr = 2e-4
-num_epochs = 150
-
-optimizer = torch.optim.Adam([dict(params=model.parameters(), lr=initial_lr),])
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, num_epochs, eta_min=1e-5, last_epoch=-1)
-
-train_epoch = smp.utils.train.TrainEpoch(
-    model, 
-    loss=loss, 
-    metrics=metrics, 
-    optimizer=optimizer,
-    device=device,
-    verbose=True,
-)
-
-valid_epoch = smp.utils.train.ValidEpoch(
-    model, 
-    loss=loss, 
-    metrics=metrics, 
-    device=device,
-    verbose=True,
-)
-
-def model_save_state_dict(model,filename,parallel_mode):
-    filename = filename+'.pt'
-    print('saving weight:',filename)
-    
-    if parallel_mode== False:
-        torch.save({'state_dict': model.state_dict()}, filename)
-    else:
-        torch.save({'state_dict': model.module.state_dict()}, filename)
-```
-# Define Model
-```
-import Mytorch as smp
-
-model = smp.Unet(encoder_name='timm-efficientnet-b7',
-                 decoder_attention_type='scse',        
-                 classes=5,
-                 encoder_weights=None,
-                 activation='softmax',)
-```
-
-
-# Train Loop
-
-```
-from livelossplot import PlotLosses
-plotlosses = PlotLosses()
-
-score = []
-for epoch in range(0, num_epochs):
-
-    scheduler.step()
-    lr = scheduler.get_lr()[0]
-    indices = np.where(np.array(score) == np.array(score).min()) if len(score)>1 else [[0]]
-    print('\nEpoch: [{:4}/{}]  lr : [{:.6f}]  Recently saved epoch : {} @ {}'.format(epoch,num_epochs, lr, indices[0], filename))
-
-    train_logs = train_epoch.run(train_loader)
-    valid_logs = valid_epoch.run(valid_loader)
-  
-    try:
-        score.append(valid_logs['loss_main']+valid_logs['loss_aux'])
-        if np.min(score) == valid_logs['loss_main']+valid_logs['loss_aux'] and epoch > 5:
-            model_save_state_dict(model,filename,parallel_mode)
-    except:
-        score.append(valid_logs['loss_main'])
-        if np.min(score) == valid_logs['loss_main'] and epoch > 5:
-            model_save_state_dict(model,filename,parallel_mode)
-
-    logkeys = list(train_logs)
-    logs = {} 
-    for logkey in logkeys:
-      logs[logkey] = train_logs[logkey]; 
-      logs['val_'+logkey] = valid_logs[logkey];#    del valid_logs[logkey];
-
-    logkeys = list(logs)
-    plotlosses.update({key_value : logs[key_value] for key_value in logkeys})
-    plotlosses.send()
-  
-```
-# Inference
-```
-model = smp.Unet(encoder_name='timm-efficientnet-b7',
-                 decoder_attention_type='scse',
-#                  aux_params=aux_params,
-                 encoder_weights=None,
-                 classes=5,
-                 activation='softmax',)
-
-model_w = torch.load(filename+'.pt')
-model.load_state_dict(model_w['state_dict'])
-model = model.to(device)
-
-import ttach as tta
-tta_model = tta.SegmentationTTAWrapper(model, tta.aliases.d4_transform(), merge_mode='mean')```
-
-
-
-
-```
-dice = smp.utils.metrics.DICE(threshold=0.5)
-
-def evaluation(model,loader):
-    model = model.to(device)
-
-    model.eval()
-    gt_stack = []
-    pred_stack = []
-    
-    for batch in loader:
-        
-        image = batch['data'].to(device)
-        gt_seg = batch['seg'].to(device)
-        gt_cls = batch['cls'].to(device)
-        
-        with torch.no_grad():
-            pr_mask, pr_cls = model(image)
-            gt_stack.append(gt_cls)
-            pred_stack.append(pr_cls)
-            print(pred_stack,gt_stack)
-        
-    return pred_stack, gt_stack
-
-evaluation(model,test_loader)
-
+model = SegModel_plain(config)
+trainer.fit(model)
 ```
